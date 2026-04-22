@@ -201,6 +201,37 @@ select.input-field{appearance:none}
 .tx-item .tx-left{color:var(--muted)}.tx-item .tx-right{font-weight:700;color:var(--accent3)}
 
 
+
+/* AI EDITOR */
+.ai-editor-wrap{display:flex;flex-direction:column;gap:16px}
+.ai-chat{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:0;overflow:hidden;min-height:360px;max-height:520px;display:flex;flex-direction:column}
+.ai-chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.ai-msg{max-width:88%;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6;animation:fadeIn 0.2s ease}
+.ai-msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.ai-msg.assistant{align-self:flex-start;background:var(--surface2);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border)}
+.ai-msg.assistant code{background:rgba(0,0,0,0.3);padding:2px 5px;border-radius:4px;font-size:12px;font-family:monospace}
+.ai-msg.assistant pre{background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;overflow-x:auto;margin:8px 0;font-size:11px;line-height:1.5}
+.ai-msg.system{align-self:center;background:rgba(245,158,11,0.1);color:var(--gold);border:1px solid rgba(245,158,11,0.2);font-size:11px;padding:6px 12px;border-radius:100px;max-width:95%}
+.ai-msg.error{align-self:flex-start;background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
+.ai-msg.thinking{align-self:flex-start;background:var(--surface2);color:var(--muted);font-style:italic;border:1px dashed var(--border)}
+.ai-chat-input{border-top:1px solid var(--border);padding:12px;display:flex;gap:8px;background:var(--surface)}
+.ai-chat-input textarea{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:13px;outline:none;resize:none;min-height:44px;max-height:120px;transition:border-color 0.2s}
+.ai-chat-input textarea:focus{border-color:var(--accent)}
+.ai-send-btn{padding:10px 18px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;flex-shrink:0;align-self:flex-end}
+.ai-send-btn:hover{background:#6d28d9}
+.ai-send-btn:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed}
+.ai-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ai-key-box{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px 12px;flex:1;min-width:200px}
+.ai-key-box input{flex:1;background:none;border:none;color:var(--accent2);font-family:monospace;font-size:12px;outline:none}
+.rollback-list{max-height:200px;overflow-y:auto}
+.rollback-item{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:6px;flex-wrap:wrap}
+.rollback-item .ri-info{flex:1;font-size:12px}
+.rollback-item .ri-desc{color:var(--text);font-weight:600;margin-bottom:2px}
+.rollback-item .ri-date{color:var(--muted);font-size:11px}
+.pending-changes-bar{background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(6,182,212,0.08));border:1px solid rgba(124,58,237,0.3);border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px;display:none}
+.pending-changes-bar p{font-size:13px;color:var(--text);flex:1}
+.ai-diff-preview{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:8px;font-size:11px;font-family:monospace;max-height:180px;overflow-y:auto;line-height:1.6;display:none}
+
 /* IMAGE UPLOAD */
 .img-upload-wrap{position:relative;margin-bottom:14px}
 .img-upload-box{display:flex;align-items:center;gap:12px;background:var(--bg);border:2px dashed var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all 0.2s}
@@ -482,6 +513,7 @@ select.input-field{appearance:none}
     <button class="admin-tab" onclick="switchTab('products')">&#x1F4B0; Productos</button>
     <button class="admin-tab" onclick="switchTab('promos')">&#x1F4E3; Promos</button>
     <button class="admin-tab" onclick="switchTab('affiliates')">&#x1F91D; Afiliados</button>
+    <button class="admin-tab" onclick="switchTab('ai')">&#x1F916; IA Editor</button>
     <button class="admin-tab" onclick="switchTab('notifs')">&#x1F514; Notificaciones <span id="notifAdminBadge" style="display:none;background:#7c3aed;color:#fff;font-size:10px;font-weight:800;padding:2px 6px;border-radius:100px;margin-left:4px">0</span></button>
   </div>
 
@@ -732,6 +764,52 @@ select.input-field{appearance:none}
         <button class="btn btn-primary" style="flex:1" onclick="savePromo(true)">&#x1F7E2; Activar</button>
         <button class="btn btn-danger" onclick="savePromo(false)">Desactivar</button>
       </div>
+    </div>
+  </div>
+
+
+  <div class="admin-section" id="admin-ai">
+    <div class="panel">
+      <h3>&#x1F916; Agente IA — Editor Autonomo</h3>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:14px">Describe en lenguaje natural los cambios que quieres hacer en la web. La IA analizara el codigo, aplicara los cambios y creara un punto de restauracion automatico.</p>
+
+      <!-- API Key config -->
+      <div class="ai-toolbar" style="margin-bottom:14px">
+        <div class="ai-key-box">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent2);flex-shrink:0"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          <input type="password" id="aiApiKey" placeholder="sk-ant-... (Anthropic API Key)" onchange="saveAiKey()">
+        </div>
+        <button class="btn btn-sm" style="background:var(--surface2);color:var(--text)" onclick="toggleAiKey()">&#x1F441; Ver</button>
+        <button class="btn btn-sm btn-success" onclick="testAiConnection()">Probar conexion</button>
+      </div>
+      <div id="aiConnectionStatus" style="font-size:12px;margin-bottom:12px"></div>
+
+      <!-- Pending changes bar -->
+      <div class="pending-changes-bar" id="pendingChangesBar">
+        <p id="pendingChangesText">La IA propone cambios. Revisa el diff y aplica o descarta.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-success" onclick="applyAiChanges()">&#x2705; Aplicar cambios</button>
+          <button class="btn btn-sm btn-danger" onclick="discardAiChanges()">&#x274C; Descartar</button>
+        </div>
+      </div>
+      <div class="ai-diff-preview" id="aiDiffPreview"></div>
+
+      <!-- Chat -->
+      <div class="ai-chat" id="aiChat">
+        <div class="ai-chat-messages" id="aiMessages">
+          <div class="ai-msg system">&#x1F916; Agente listo. Escribe que cambios quieres hacer en tu web.</div>
+        </div>
+        <div class="ai-chat-input">
+          <textarea id="aiInput" placeholder="Ej: Cambia el color de los botones a azul oscuro, agrega una seccion de preguntas frecuentes al final..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiMessage();}"></textarea>
+          <button class="ai-send-btn" id="aiSendBtn" onclick="sendAiMessage()">&#x1F4E4; Enviar</button>
+        </div>
+      </div>
+
+      <!-- Rollback -->
+      <div class="divider"></div>
+      <h4 style="font-family:Syne,sans-serif;font-size:14px;margin-bottom:10px">&#x23F3; Historial de versiones (Rollback)</h4>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Antes de cada cambio aplicado, se guarda una copia de seguridad automatica.</p>
+      <div class="rollback-list" id="rollbackList"><p style="color:var(--muted);font-size:13px">Sin versiones guardadas aun.</p></div>
     </div>
   </div>
 
@@ -1415,7 +1493,7 @@ function renderAdmin(){
 function updatePromoStatusBox(){var box=document.getElementById('promoStatusBox');if(!box)return;box.innerHTML=state.promo&&state.promo.active&&state.promo.title?'<div class="alert-info" style="color:var(--accent3);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.07)">Promocion ACTIVA: <strong>'+state.promo.title+'</strong></div>':'<div class="alert-info">Sin promocion activa.</div>';}
 
 function switchTab(tab){
-  var tabs=['general','api','credits','orders','users','platforms','products','promos','affiliates','notifs'];
+  var tabs=['general','api','credits','orders','users','platforms','products','promos','affiliates','ai','notifs'];
   var btns=document.querySelectorAll('.admin-tab');
   for(var i=0;i<tabs.length;i++){btns[i].classList.toggle('active',tabs[i]===tab);document.getElementById('admin-'+tabs[i]).classList.toggle('active',tabs[i]===tab);}
 }
@@ -2447,6 +2525,347 @@ function removePromoImg() {
   document.getElementById('promo-img-file').value = '';
   if (state.promo) state.promo.image = '';
   showToast('Imagen eliminada');
+}
+
+
+// ============================================================
+// AI EDITOR — AUTONOMOUS CODE AGENT
+// ============================================================
+var AI_KEY_STORAGE = 'smm_ai_key';
+var ROLLBACK_STORAGE = 'smm_rollbacks';
+var _aiHistory = [];
+var _pendingCode = null;
+var _aiThinking = false;
+
+// ---- Key management ----
+function saveAiKey(){
+  var k = document.getElementById('aiApiKey').value.trim();
+  if(k) localStorage.setItem(AI_KEY_STORAGE, k);
+}
+function loadAiKey(){
+  var k = localStorage.getItem(AI_KEY_STORAGE)||'';
+  var inp = document.getElementById('aiApiKey');
+  if(inp && k) inp.value = k;
+  return k;
+}
+function toggleAiKey(){
+  var inp = document.getElementById('aiApiKey');
+  inp.type = inp.type==='password' ? 'text' : 'password';
+}
+
+// ---- Connection test ----
+function testAiConnection(){
+  var key = loadAiKey();
+  var status = document.getElementById('aiConnectionStatus');
+  if(!key){status.innerHTML='<span style="color:#f87171">Ingresa tu API Key primero.</span>';return;}
+  status.innerHTML='<span style="color:var(--muted)">Probando conexion...</span>';
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-opus-4-5',max_tokens:50,messages:[{role:'user',content:'Say OK'}]})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.content && d.content[0]){
+      status.innerHTML='<span style="color:var(--accent3)">&#x2705; Conexion exitosa con Claude.</span>';
+    } else {
+      status.innerHTML='<span style="color:#f87171">Error: '+(d.error&&d.error.message||'Respuesta inesperada')+'</span>';
+    }
+  })
+  .catch(function(e){status.innerHTML='<span style="color:#f87171">Error de red: '+e.message+'</span>';});
+}
+
+// ---- Markdown renderer (no template literals, no problematic regex) ----
+function simpleMarkdown(text){
+  var s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Code blocks: find ``` ... ``` using indexOf loop to avoid regex newline issues
+  var result = '';
+  var i = 0;
+  while(i < s.length){
+    var cb = s.indexOf('```', i);
+    if(cb === -1){ result += s.slice(i); break; }
+    result += s.slice(i, cb);
+    var end = s.indexOf('```', cb+3);
+    if(end === -1){ result += s.slice(cb); break; }
+    var code = s.slice(cb+3, end).replace(/^[a-z]*/,'').replace(/^\n/,'');
+    result += '<pre>' + code + '</pre>';
+    i = end + 3;
+  }
+  // Inline code, bold, newlines
+  result = result
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  // Replace newlines (safe since we are working with a regular string now)
+  var parts = result.split('\n');
+  return parts.join('<br>');
+}
+
+// ---- Chat UI ----
+function addAiMsg(role, text){
+  var msgs = document.getElementById('aiMessages');
+  var div = document.createElement('div');
+  div.className = 'ai-msg ' + role;
+  if(role === 'assistant'){
+    // Render markdown-lite: code blocks, inline code, bold
+    div.innerHTML = simpleMarkdown(text);
+  } else {
+    div.textContent = text;
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function removeThinking(){
+  var el = document.getElementById('aiThinkingMsg');
+  if(el) el.remove();
+}
+
+// ---- Get full HTML source ----
+function getFullSource(){
+  return document.documentElement.outerHTML;
+}
+
+// ---- Rollback system ----
+function getRollbacks(){
+  try{return JSON.parse(localStorage.getItem(ROLLBACK_STORAGE)||'[]');}catch(e){return[];}
+}
+function saveRollback(desc, htmlSnapshot){
+  var list = getRollbacks();
+  list.unshift({
+    id: 'rb_'+Date.now(),
+    desc: desc,
+    date: new Date().toLocaleString('es'),
+    snapshot: htmlSnapshot
+  });
+  if(list.length > 10) list = list.slice(0,10); // keep 10 max
+  try{localStorage.setItem(ROLLBACK_STORAGE, JSON.stringify(list));}catch(e){
+    // If too large, keep fewer
+    list = list.slice(0,3);
+    try{localStorage.setItem(ROLLBACK_STORAGE, JSON.stringify(list));}catch(e2){}
+  }
+}
+function renderRollbackList(){
+  var list = getRollbacks();
+  var el = document.getElementById('rollbackList');
+  if(!el) return;
+  if(list.length===0){el.innerHTML='<p style="color:var(--muted);font-size:13px">Sin versiones guardadas aun.</p>';return;}
+  el.innerHTML='';
+  list.forEach(function(rb){
+    var wrap=document.createElement('div');
+    wrap.className='rollback-item';
+    var info=document.createElement('div');
+    info.className='ri-info';
+    info.innerHTML='<div class="ri-desc">'+escHtml(rb.desc)+'</div><div class="ri-date">'+rb.date+'</div>';
+    var btnR=document.createElement('button');
+    btnR.className='btn btn-sm';
+    btnR.style.background='rgba(234,179,8,0.15)';
+    btnR.style.color='#facc15';
+    btnR.style.border='1px solid rgba(234,179,8,0.2)';
+    btnR.innerHTML='&#x21A9; Restaurar';
+    (function(id){btnR.onclick=function(){doRollback(id);};})(rb.id);
+    var btnD=document.createElement('button');
+    btnD.className='btn btn-danger btn-sm';
+    btnD.innerHTML='&#x1F5D1;';
+    (function(id){btnD.onclick=function(){deleteRollback(id);};})(rb.id);
+    wrap.appendChild(info);
+    wrap.appendChild(btnR);
+    wrap.appendChild(btnD);
+    el.appendChild(wrap);
+  });
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function doRollback(rbId){
+  if(!confirm('Restaurar esta version? Se perderan los cambios actuales.')) return;
+  var list = getRollbacks();
+  var rb = null;
+  for(var i=0;i<list.length;i++) if(list[i].id===rbId){rb=list[i];break;}
+  if(!rb){showToast('Version no encontrada');return;}
+  // Write the snapshot to a blob URL and navigate
+  var blob = new Blob([rb.snapshot], {type:'text/html'});
+  var url = URL.createObjectURL(blob);
+  // Download as file for user to replace manually, or open in new tab
+  var a = document.createElement('a');
+  a.href = url; a.download = 'smm-store-restaurado-'+rb.id+'.html';
+  a.click();
+  showToast('Archivo restaurado descargado. Reemplaza tu archivo actual con este.');
+}
+function deleteRollback(rbId){
+  var list = getRollbacks().filter(function(r){return r.id!==rbId;});
+  localStorage.setItem(ROLLBACK_STORAGE, JSON.stringify(list));
+  renderRollbackList();
+  showToast('Version eliminada');
+}
+
+// ---- Pending changes ----
+function showPendingChanges(newHtml, summary){
+  _pendingCode = newHtml;
+  document.getElementById('pendingChangesBar').style.display='flex';
+  document.getElementById('pendingChangesText').textContent = summary || 'La IA propone cambios. Revisa y aplica o descarta.';
+  // Show a short diff preview
+  var diffEl = document.getElementById('aiDiffPreview');
+  diffEl.style.display='block';
+  var oldSrc = getFullSource();
+  // Simple line diff highlight (just show first ~30 changed lines)
+  var oldLines = oldSrc.split('\n');
+  var newLines = newHtml.split('\n');
+  var diffLines = [];
+  var checked = 0;
+  for(var i=0;i<Math.max(oldLines.length,newLines.length)&&checked<40;i++){
+    var ol=oldLines[i]||'', nl=newLines[i]||'';
+    if(ol!==nl){
+      if(ol) diffLines.push('<span style="color:#f87171;display:block">- '+escHtml(ol.trim())+'</span>');
+      if(nl) diffLines.push('<span style="color:#34d399;display:block">+ '+escHtml(nl.trim())+'</span>');
+      checked++;
+    }
+  }
+  diffEl.innerHTML = diffLines.length>0 ? diffLines.join('') : '<span style="color:var(--muted)">Cambios en estructura general del documento.</span>';
+}
+
+function applyAiChanges(){
+  if(!_pendingCode){showToast('Sin cambios pendientes');return;}
+  // Save rollback BEFORE applying
+  var desc = _aiHistory.length>0 ? _aiHistory[_aiHistory.length-1].content.slice(0,80) : 'Cambio IA';
+  saveRollback(desc, getFullSource());
+  // Download the new version for user to replace
+  var blob = new Blob([_pendingCode], {type:'text/html'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href=url; a.download='smm-store.html'; a.click();
+  URL.revokeObjectURL(url);
+  _pendingCode = null;
+  document.getElementById('pendingChangesBar').style.display='none';
+  document.getElementById('aiDiffPreview').style.display='none';
+  renderRollbackList();
+  addAiMsg('system','&#x2705; Archivo descargado. Reemplaza smm-store.html con el archivo descargado para aplicar los cambios. Se guardo un punto de restauracion.');
+  showToast('Archivo con cambios descargado!');
+}
+
+function discardAiChanges(){
+  _pendingCode = null;
+  document.getElementById('pendingChangesBar').style.display='none';
+  document.getElementById('aiDiffPreview').style.display='none';
+  addAiMsg('system','&#x274C; Cambios descartados. El codigo original no fue modificado.');
+}
+
+// ---- Main AI call ----
+function sendAiMessage(){
+  if(_aiThinking) return;
+  var input = document.getElementById('aiInput');
+  var text = input.value.trim();
+  if(!text) return;
+  var key = loadAiKey();
+  if(!key){
+    addAiMsg('error','Ingresa tu API Key de Anthropic primero en el campo superior.');
+    return;
+  }
+  input.value='';
+  addAiMsg('user', text);
+  _aiHistory.push({role:'user', content:text});
+
+  // Show thinking
+  _aiThinking = true;
+  var btn = document.getElementById('aiSendBtn');
+  btn.disabled=true; btn.textContent='Pensando...';
+  var thinkEl = addAiMsg('thinking', '&#x1F4AD; Analizando el codigo y preparando los cambios...');
+  thinkEl.id = 'aiThinkingMsg';
+
+  // Build system prompt with source
+  var src = getFullSource();
+  var sysPrompt = [
+    'Eres un agente experto en desarrollo web que edita archivos HTML/CSS/JS de forma segura.',
+    '',
+    'El usuario tiene una web de servicios SMM (un solo archivo HTML autosuficiente).',
+    'Tu tarea es ANALIZAR el codigo fuente actual y APLICAR los cambios solicitados.',
+    '',
+    'REGLAS CRITICAS:',
+    '1. Devuelve SIEMPRE el archivo HTML COMPLETO y modificado, sin omitir nada.',
+    '2. NUNCA elimines funcionalidad existente a menos que se te pida explicitamente.',
+    '3. Valida mentalmente que el JS sea sintacticamente correcto antes de responder.',
+    '4. No uses template literals (backticks) en JS - usa concatenacion de strings.',
+    '5. Si el cambio es solo estetico (color, texto, tamano), aplica el minimo cambio necesario.',
+    '6. Si el usuario pide algo imposible en un archivo estatico, explicalo y ofrece alternativa.',
+    '7. Comienza tu respuesta con una linea de resumen: "CAMBIOS: [descripcion breve]"',
+    '8. Luego incluye el codigo completo entre marcadores exactos:',
+    '   ===INICIO_HTML===',
+    '   [codigo HTML completo]',
+    '   ===FIN_HTML===',
+    '9. Si solo quieres hacer una pregunta de aclaracion sin dar codigo, NO incluyas los marcadores.',
+    '',
+    'CODIGO FUENTE ACTUAL (' + Math.round(src.length/1024) + 'KB):',
+    src.slice(0, 180000)
+  ].join('\n')
+  var messages = [{role:'user', content:'INSTRUCCION DEL ADMINISTRADOR: '+text}];
+  // Add previous conversation context (last 4 exchanges)
+  var ctxHistory = _aiHistory.slice(-8);
+  var messagesWithCtx = ctxHistory.map(function(m){return {role:m.role,content:m.content};});
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-opus-4-5',
+      max_tokens:8000,
+      system:sysPrompt,
+      messages:messagesWithCtx
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    removeThinking();
+    _aiThinking=false;
+    btn.disabled=false; btn.textContent='&#x1F4E4; Enviar';
+
+    if(data.error){
+      addAiMsg('error','Error de API: '+data.error.message);
+      return;
+    }
+    if(!data.content||!data.content[0]){
+      addAiMsg('error','Respuesta vacia de la IA.');
+      return;
+    }
+
+    var resp = data.content[0].text||'';
+    _aiHistory.push({role:'assistant', content:resp.slice(0,200)});
+
+    // Check if response contains full HTML
+    var startMarker = '===INICIO_HTML===';
+    var endMarker = '===FIN_HTML===';
+    var startIdx = resp.indexOf(startMarker);
+    var endIdx = resp.indexOf(endMarker);
+
+    if(startIdx>=0 && endIdx>startIdx){
+      var summary = resp.slice(0,startIdx).trim();
+      var newHtml = resp.slice(startIdx+startMarker.length, endIdx).trim();
+      // Show summary message
+      if(summary) addAiMsg('assistant', summary);
+      // Show pending changes UI
+      showPendingChanges(newHtml, summary.slice(0,100));
+      addAiMsg('system','&#x270F;&#xFE0F; Cambios listos. Revisa el diff arriba y presiona "Aplicar cambios" para descargar el archivo actualizado.');
+    } else {
+      // Just a conversation message, no code
+      addAiMsg('assistant', resp);
+    }
+  })
+  .catch(function(e){
+    removeThinking();
+    _aiThinking=false;
+    btn.disabled=false; btn.textContent='&#x1F4E4; Enviar';
+    addAiMsg('error','Error de conexion: '+e.message+'. Verifica tu API Key y conexion a internet.');
+  });
+}
+
+// ---- Init AI tab ----
+function initAiTab(){
+  loadAiKey();
+  renderRollbackList();
 }
 
 // ============================================================
