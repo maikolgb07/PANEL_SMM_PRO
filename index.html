@@ -202,6 +202,14 @@ select.input-field{appearance:none}
 
 
 
+
+/* MAINTENANCE MODE */
+.maint-pulse{animation:maintPulse 2s infinite}
+@keyframes maintPulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.maint-locked{pointer-events:none;opacity:0.4;filter:grayscale(0.5);cursor:not-allowed!important}
+.maint-banner{background:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(245,158,11,0.1));border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 16px;margin-bottom:14px;display:none;align-items:center;gap:10px;flex-wrap:wrap}
+.maint-banner p{font-size:12px;color:#f87171;flex:1}
+
 /* AI EDITOR */
 .ai-editor-wrap{display:flex;flex-direction:column;gap:16px}
 .ai-chat{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:0;overflow:hidden;min-height:360px;max-height:520px;display:flex;flex-direction:column}
@@ -289,6 +297,21 @@ select.input-field{appearance:none}
   </div>
 </div>
 
+<!-- MAINTENANCE MODE OVERLAY -->
+<div id="maintenanceOverlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:650;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center">
+  <div style="max-width:440px">
+    <div style="font-size:64px;margin-bottom:20px">&#x1F6E0;&#xFE0F;</div>
+    <div style="font-family:Syne,sans-serif;font-size:26px;font-weight:800;margin-bottom:10px;background:linear-gradient(135deg,#fff 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="maintTitleDisplay">Sitio en mantenimiento</div>
+    <p style="color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:28px" id="maintMsgDisplay">Estamos mejorando nuestra plataforma. Volvemos pronto con novedades.</p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">&#x23F3; Tiempo estimado de regreso</div>
+      <div style="font-family:Syne,sans-serif;font-size:20px;font-weight:800;color:var(--gold)" id="maintCountdown">Pronto</div>
+    </div>
+    <p style="font-size:12px;color:var(--muted)">Si eres administrador, <button onclick="showAdminLogin()" style="background:none;border:none;color:var(--accent2);cursor:pointer;font-size:12px;text-decoration:underline">ingresa aqui</button>.</p>
+  </div>
+</div>
+
+
 <!-- WA FLOAT -->
 <a class="wa-float" id="waFloat" href="#" target="_blank">
   <svg viewBox="0 0 24 24" width="28" height="28" fill="white"><path d="M12 4a8 8 0 0 0-6.9 12L4 20l4.1-1.1A8 8 0 1 0 12 4zm4.7 10.9c-.2.6-1.2 1.1-1.6 1.2-.4 0-.8.1-2.4-.5-2-1-3.3-3-3.4-3.2-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.6-.3h.5c.1 0 .3 0 .5.4l.6 1.6c.1.2.1.4 0 .5l-.3.5-.3.3c.1.2.6.9 1.2 1.5.7.7 1.4 1 1.6 1.1l.5-.6c.1-.2.3-.2.5-.1l1.5.7c.2.1.4.2.4.4s-.1.8-.3 1z"/></svg>
@@ -359,6 +382,10 @@ select.input-field{appearance:none}
     <div class="site-name" id="headerName">SMMBoost Pro</div>
     <div class="site-tagline" id="headerTagline">Servicios SMM al mejor precio</div>
     <div class="aff-banner" id="affBanner">Estas navegando con enlace de afiliado</div>
+    <div class="maint-banner" id="storeMaintBanner" style="margin:10px auto;max-width:420px">
+      <span style="font-size:16px">&#x1F6A7;</span>
+      <p><strong>Modo mantenimiento activo</strong> &mdash; Las compras estan deshabilitadas temporalmente.</p>
+    </div>
   </header>
   <div class="balance-bar" id="balanceBar" style="display:none">
     <div class="credit-chip"><span class="coin">&#x1FA99;</span><span id="balanceDisplay">0</span> Creditos</div>
@@ -506,7 +533,6 @@ select.input-field{appearance:none}
   <div class="admin-tabs">
     <button class="admin-tab active" onclick="switchTab('general')">&#x2699; General</button>
     <button class="admin-tab" onclick="switchTab('credits')">&#x1FA99; Creditos</button>
-    <button class="admin-tab" onclick="switchTab('api')" id="apiTabBtn">&#x1F517; API Proveedor</button>
     <button class="admin-tab" onclick="switchTab('orders')" id="ordersTabBtn">&#x1F4E6; Pedidos <span id="pendingBadge" style="display:none;background:#f59e0b;color:#000;font-size:10px;font-weight:800;padding:2px 6px;border-radius:100px;margin-left:4px">0</span></button>
     <button class="admin-tab" onclick="switchTab('users')">&#x1F464; Usuarios</button>
     <button class="admin-tab" onclick="switchTab('platforms')">&#x1F4F1; Plataformas</button>
@@ -552,25 +578,22 @@ select.input-field{appearance:none}
         <div><input class="input-field" id="cfg-np2" placeholder="Repetir" type="password"></div>
       </div>
       <div class="divider"></div>
-      <h4 style="font-family:Syne,sans-serif;font-size:14px;margin-bottom:12px">&#x26A1; Integracion API Proveedor SMM</h4>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Conecta tu proveedor SMM para que los pedidos se procesen automaticamente cuando un cliente compra. Necesitas subir <code style="background:var(--surface2);padding:1px 5px;border-radius:4px;color:var(--accent2)">api_proxy.php</code> a tu hosting.</p>
-      <div id="apiStatusBar" style="margin-bottom:12px"></div>
-      <div class="form-row">
-        <div><label class="lbl">URL del Proxy (api_proxy.php)</label><input class="input-field" id="cfg-api-url" placeholder="https://tudominio.com/api_proxy.php"></div>
-        <div><label class="lbl">Admin Secret (el que pusiste en smm_config.php)</label><input class="input-field" id="cfg-api-secret" placeholder="Tu clave secreta" type="password"></div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-        <button class="btn btn-sm" style="background:var(--surface2);color:var(--text)" onclick="testApiConnection()">&#x1F50C; Probar conexion</button>
-        <button class="btn btn-sm" style="background:rgba(6,182,212,0.15);color:var(--accent2);border:1px solid rgba(6,182,212,0.2)" onclick="loadProviderBalance()">&#x1FA99; Ver balance proveedor</button>
-        <button class="btn btn-sm" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.2)" onclick="loadProviderServices()">&#x1F4CB; Importar servicios</button>
-      </div>
-      <div id="apiServicesPanel" style="display:none">
-        <div class="divider"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <label class="lbl" style="margin:0">Servicios del proveedor</label>
-          <input class="input-field" id="apiServiceFilter" placeholder="Filtrar..." style="max-width:200px;margin:0;padding:7px 10px;font-size:12px" oninput="filterApiServices()">
+      <h4 style="font-family:Syne,sans-serif;font-size:14px;margin-bottom:12px">&#x1F6A7; Modo Mantenimiento</h4>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Activa el mantenimiento para bloquear compras y mostrar un aviso a los visitantes. Tu acceso de admin no se ve afectado.</p>
+      <div id="maintenanceStatus" style="margin-bottom:12px"></div>
+      <div class="form-row" style="margin-bottom:12px">
+        <div>
+          <label class="lbl">Titulo del aviso</label>
+          <input class="input-field" id="maint-title" placeholder="Ej: Sitio en mantenimiento" style="margin-bottom:0">
         </div>
-        <div id="apiServicesList" style="max-height:300px;overflow-y:auto"></div>
+        <div>
+          <label class="lbl">Subtitulo / mensaje</label>
+          <input class="input-field" id="maint-msg" placeholder="Ej: Volvemos pronto..." style="margin-bottom:0">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" id="maintActivateBtn" onclick="toggleMaintenance(true)" style="flex:1;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)">&#x1F6A7; Activar mantenimiento</button>
+        <button class="btn" id="maintDeactivateBtn" onclick="toggleMaintenance(false)" style="flex:1;background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3)">&#x2705; Desactivar mantenimiento</button>
       </div>
       <div class="divider"></div>
       <h4 style="font-family:Syne,sans-serif;font-size:14px;margin-bottom:12px">&#x2709;&#xFE0F; Configuracion de Emails (EmailJS)</h4>
@@ -588,45 +611,6 @@ select.input-field{appearance:none}
         <button class="btn btn-primary" onclick="saveConfig()">&#x1F4BE; Guardar cambios</button>
         <button class="btn btn-sm" style="background:var(--surface2);color:var(--text)" onclick="testEmailConfig()">Probar email</button>
       </div>
-    </div>
-  </div>
-
-  <div class="admin-section" id="admin-api">
-    <div class="panel">
-      <h3>&#x1F517; Configuracion del Proveedor SMM</h3>
-      <div class="alert-info">Conecta tu API de proveedor. Los pedidos se enviaran automaticamente cuando el cliente compre. Funciona con cualquier proveedor que use el formato estandar SMM Panel.</div>
-      <div class="form-row">
-        <div>
-          <label class="lbl">URL del API del proveedor</label>
-          <input class="input-field" id="api-url" placeholder="https://tuproveedor.com/api/v2">
-        </div>
-        <div>
-          <label class="lbl">API Key (tu clave privada)</label>
-          <input class="input-field" id="api-key" placeholder="tu_api_key_aqui" type="password">
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-        <button class="btn btn-primary" onclick="saveApiConfig()">&#x1F4BE; Guardar API</button>
-        <button class="btn btn-sm" style="background:var(--surface2);color:var(--text)" onclick="testApiBalance()">&#x1F4B0; Ver balance</button>
-        <button class="btn btn-sm" style="background:var(--surface2);color:var(--text)" onclick="loadProviderServices()">&#x1F4CB; Ver servicios disponibles</button>
-      </div>
-      <div id="apiTestResult" style="font-size:13px;margin-bottom:16px"></div>
-      <!-- API Status -->
-      <div id="apiStatusBox" style="margin-bottom:16px"></div>
-      <div class="divider"></div>
-      <!-- Sync Products with Provider -->
-      <h4 style="font-family:Syne,sans-serif;font-size:14px;margin-bottom:10px">&#x1F504; Vincular productos con servicios del proveedor</h4>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Para que un pedido se envie automaticamente, cada producto debe tener el ID del servicio del proveedor asignado. Haz clic en "Ver servicios disponibles" para ver la lista y copia el ID del servicio correspondiente en cada producto.</p>
-      <div id="providerServicesList" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <label class="lbl" style="margin-bottom:0">Servicios del proveedor</label>
-          <input class="input-field" id="serviceSearch" placeholder="Buscar servicio..." style="max-width:200px;margin-bottom:0;padding:7px 12px;font-size:12px" oninput="filterProviderServices(this.value)">
-        </div>
-        <div id="servicesTableWrap" style="max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:10px"></div>
-      </div>
-      <div class="divider"></div>
-      <h4 style="font-family:Syne,sans-serif;font-size:14px;margin-bottom:10px">&#x1F4E6; Asignar ID de proveedor a mis productos</h4>
-      <div id="productProviderList"></div>
     </div>
   </div>
 
@@ -1030,6 +1014,11 @@ function doLogin(){
 
 function openApp(){
   document.getElementById('authGate').style.display='none';
+  var _ms=getMaintState();
+  if(_ms&&_ms.active&&!state.isAdmin){
+    showMaintenanceOverlay(_ms);
+    return;
+  }
   updateHeader(); renderStore(); checkPromo();
 }
 
@@ -1044,15 +1033,16 @@ function logoutUser(){
 // PROMO
 // ============================================================
 function checkPromo(){
+  // Show EVERY time the user enters or reloads — no session gate
   if(!state.promo||!state.promo.active||!state.promo.title) return;
-  var key='smm_promo_'+state.promo.title.replace(/\s/g,'');
-  if(sessionStorage.getItem(key)) return;
-  sessionStorage.setItem(key,'1');
   document.getElementById('promoLabel').textContent=state.promo.label||'PROMOCION';
   document.getElementById('promoTitle').textContent=state.promo.title;
   document.getElementById('promoDesc').textContent=state.promo.desc;
   var pImg=document.getElementById('promoPopupImg');
-  if(pImg){if(state.promo.image){pImg.src=state.promo.image;pImg.style.display='block';}else{pImg.style.display='none';}}
+  if(pImg){
+    if(state.promo.image){pImg.src=state.promo.image;pImg.style.display='block';}
+    else{pImg.style.display='none';}
+  }
   setTimeout(function(){ document.getElementById('promoOverlay').classList.add('open'); },900);
 }
 function closePromo(){ document.getElementById('promoOverlay').classList.remove('open'); }
@@ -1061,6 +1051,12 @@ function closePromo(){ document.getElementById('promoOverlay').classList.remove(
 // NAVIGATION
 // ============================================================
 function showView(v){
+  // Block navigation during maintenance for non-admins
+  var _ms=getMaintState();
+  if(_ms&&_ms.active&&!state.isAdmin&&v!=='admin-login'){
+    showMaintenanceOverlay(_ms);
+    return;
+  }
   var views=document.querySelectorAll('.view');
   for(var i=0;i<views.length;i++) views[i].classList.remove('active');
   if(v==='admin'&&!state.isAdmin) v='admin-login';
@@ -1203,6 +1199,7 @@ function renderStore(){
     html+='</div>';
   }
   document.getElementById('storeContent').innerHTML=html;
+  setTimeout(updateStoreLockState,50);
 }
 
 function goHome(){state.nav={platform:null,category:null};renderStore();}
@@ -1313,6 +1310,7 @@ function updateOrderCheck(){
 function closeModal(){document.getElementById('orderModal').classList.remove('open');}
 
 function sendOrder(){
+  var _ms=getMaintState();if(_ms&&_ms.active&&!state.isAdmin){showToast('Las compras estan temporalmente deshabilitadas por mantenimiento.');return;}
   var user=document.getElementById('orderUser').value.trim();
   if(!user){showToast('Ingresa el enlace de tu perfil o publicacion');return;}
   var sel=document.getElementById('orderQty'); var opt=sel.options[sel.selectedIndex];
@@ -1454,8 +1452,11 @@ function requestPayout(){var aff=state.currentAff;if((aff.earnings||0)<5){showTo
 // ============================================================
 function adminLogin(){
   var u=document.getElementById('adminUser').value,p=document.getElementById('adminPass').value;
-  if(u===ADMIN_USER&&p===ADMIN_PASS){state.isAdmin=true;localStorage.setItem(ADMIN_SK,'1');showView('admin');}
-  else showToast('Credenciales incorrectas');
+  if(u===ADMIN_USER&&p===ADMIN_PASS){
+    state.isAdmin=true;localStorage.setItem(ADMIN_SK,'1');
+    hideMaintenanceOverlay();
+    showView('admin');
+  } else showToast('Credenciales incorrectas');
 }
 function adminLogout(){state.isAdmin=false;localStorage.removeItem(ADMIN_SK);showView('store');}
 
@@ -1487,13 +1488,13 @@ function renderAdmin(){
     document.getElementById('cfg-ejs-tmpl-client').value=state.emailjs.templateClient||'';
     document.getElementById('cfg-ejs-tmpl-admin').value=state.emailjs.templateAdmin||'';
   }
-  updatePromoStatusBox();renderOrdersList();renderUsersList();renderPlatformsList();renderProductsList();renderAffList();renderRechargeHistory();renderAdminNotifs();updatePendingBadge();renderApiPanel();
+  updatePromoStatusBox();renderOrdersList();renderUsersList();renderPlatformsList();renderProductsList();renderAffList();renderRechargeHistory();renderAdminNotifs();updatePendingBadge();updateMaintStatusBox();renderApiPanel();
 }
 
 function updatePromoStatusBox(){var box=document.getElementById('promoStatusBox');if(!box)return;box.innerHTML=state.promo&&state.promo.active&&state.promo.title?'<div class="alert-info" style="color:var(--accent3);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.07)">Promocion ACTIVA: <strong>'+state.promo.title+'</strong></div>':'<div class="alert-info">Sin promocion activa.</div>';}
 
 function switchTab(tab){
-  var tabs=['general','api','credits','orders','users','platforms','products','promos','affiliates','ai','notifs'];
+  var tabs=['general','credits','orders','users','platforms','products','promos','affiliates','ai','notifs'];
   var btns=document.querySelectorAll('.admin-tab');
   for(var i=0;i<tabs.length;i++){btns[i].classList.toggle('active',tabs[i]===tab);document.getElementById('admin-'+tabs[i]).classList.toggle('active',tabs[i]===tab);}
 }
@@ -1505,13 +1506,7 @@ function saveConfig(){
   var photoVal=uploadedPhoto.startsWith('data:')?uploadedPhoto:'';
   state.config={name:document.getElementById('cfg-name').value||'SMMBoost Pro',tagline:document.getElementById('cfg-tagline').value||'Servicios SMM al mejor precio',whatsapp:document.getElementById('cfg-whatsapp').value||'+1234567890',email:document.getElementById('cfg-email').value||'',photo:photoVal,emoji:document.getElementById('cfg-emoji').value||''};
   // Save API config
-  var apiUrl=document.getElementById('cfg-api-url').value.trim();
-  var apiSecret=document.getElementById('cfg-api-secret').value.trim();
-  if(apiUrl||apiSecret){
-    if(!state.apiConfig) state.apiConfig={};
-    if(apiUrl) state.apiConfig.url=apiUrl;
-    if(apiSecret) state.apiConfig.secret=apiSecret;
-  }
+  
   // Save EmailJS config
   var ejsPub=document.getElementById('cfg-ejs-pubkey').value.trim();
   var ejsSvc=document.getElementById('cfg-ejs-service').value.trim();
@@ -1810,7 +1805,6 @@ function getApiConfig() {
 }
 
 function updateApiStatusBar() {
-  var bar = document.getElementById('apiStatusBar');
   if (!bar) return;
   var cfg = getApiConfig();
   if (cfg) {
@@ -1832,80 +1826,6 @@ function smmApiCall(action, extraBody, callback) {
   .then(function(r) { return r.json(); })
   .then(function(data) { callback(null, data); })
   .catch(function(err) { callback(err, null); });
-}
-
-function testApiConnection() {
-  var urlField = document.getElementById('cfg-api-url');
-  var secretField = document.getElementById('cfg-api-secret');
-  var url = urlField ? urlField.value.trim() : '';
-  var secret = secretField ? secretField.value.trim() : '';
-  if (!url || !secret) { showToast('Completa URL y Secret primero'); return; }
-  // Temporarily set for test
-  var prevCfg = state.apiConfig;
-  state.apiConfig = { url: url, secret: secret };
-  showToast('Conectando...');
-  smmApiCall('check_balance', {}, function(err, data) {
-    state.apiConfig = prevCfg;
-    var bar = document.getElementById('apiStatusBar');
-    if (err || !data || !data.ok) {
-      var errMsg = (data && data.error) ? data.error : (err ? err.message : 'Sin respuesta');
-      if (bar) bar.innerHTML = '<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;font-size:12px;color:#f87171">&#x274C; Error de conexion: ' + errMsg + '</div>';
-      showToast('Error: ' + errMsg);
-    } else {
-      var bal = data.balance ? JSON.stringify(data.balance) : 'OK';
-      if (bar) bar.innerHTML = '<div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--accent3)">&#x2705; Conexion exitosa! Balance: ' + bal + '</div>';
-      showToast('Conexion exitosa!');
-    }
-  });
-}
-
-function loadProviderBalance() {
-  smmApiCall('check_balance', {}, function(err, data) {
-    if (err || !data || !data.ok) { showToast('Error al obtener balance'); return; }
-    var bal = data.balance;
-    var currency = bal && bal.currency ? bal.currency : 'USD';
-    var amount = bal && bal.balance ? bal.balance : (typeof bal === 'object' ? JSON.stringify(bal) : bal);
-    showToast('Balance proveedor: ' + amount + ' ' + currency);
-    var bar = document.getElementById('apiStatusBar');
-    if (bar) bar.innerHTML = '<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--gold)">&#x1FA99; Balance proveedor: <strong>' + amount + ' ' + currency + '</strong></div>';
-  });
-}
-
-function loadProviderServices() {
-  showToast('Cargando servicios...');
-  smmApiCall('get_services', {}, function(err, data) {
-    var panel = document.getElementById('apiServicesPanel');
-    var list = document.getElementById('apiServicesList');
-    if (err || !data || !data.ok || !data.services) {
-      showToast('Error al cargar servicios');
-      return;
-    }
-    state._providerServices = Array.isArray(data.services) ? data.services : [];
-    if (panel) panel.style.display = 'block';
-    renderApiServicesList(state._providerServices);
-    showToast(state._providerServices.length + ' servicios cargados');
-  });
-}
-
-function renderApiServicesList(services) {
-  var list = document.getElementById('apiServicesList');
-  if (!list) return;
-  if (!services || services.length === 0) { list.innerHTML = '<p style="color:var(--muted);font-size:13px">Sin servicios.</p>'; return; }
-  var html = '';
-  for (var i = 0; i < services.length; i++) {
-    var s = services[i];
-    var name = s.name || s.service || 'Servicio ' + s.service;
-    var sid = s.service || s.id;
-    var cat = s.category || '';
-    var minQ = s.min || '-';
-    var maxQ = s.max || '-';
-    var rate = s.rate ? ('$' + s.rate + ' /1000') : '';
-    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:10px">';
-    html += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + name + '</div>';
-    html += '<div style="font-size:10px;color:var(--muted)">ID: ' + sid + ' | ' + cat + ' | ' + minQ + '-' + maxQ + ' uds ' + rate + '</div></div>';
-    html += '<button class="btn btn-sm" style="background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);font-size:11px;white-space:nowrap" data-sid="' + sid + '" onclick="linkServiceFromBtn(this)">&#x1F517; Vincular</button></div>';
-  }
-  list.innerHTML = html;
 }
 
 function filterApiServices() {
@@ -2219,26 +2139,6 @@ function getProxyUrl(){
   return 'api.php';
 }
 
-function callProviderAPI(params, callback){
-  var cfg = state.apiConfig;
-  if(!cfg||!cfg.url||!cfg.key){
-    callback({error:'API no configurada. Ve a Admin -> API Proveedor.'});
-    return;
-  }
-  var body = Object.assign({}, params, {
-    provider_url: cfg.url,
-    api_key: cfg.key
-  });
-  fetch(getProxyUrl(), {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(body)
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){callback(data);})
-  .catch(function(e){callback({error:'Error de conexion: '+e.message+'. Asegurate de que api.php esta en el mismo servidor.'});});
-}
-
 function saveApiConfig(){
   var url = document.getElementById('api-url').value.trim();
   var key = document.getElementById('api-key').value.trim();
@@ -2445,6 +2345,118 @@ function checkProviderOrderStatus(orderId){
         renderOrdersList();
         break;
       }
+    }
+  });
+}
+
+
+// ============================================================
+// MAINTENANCE MODE SYSTEM
+// ============================================================
+var MAINT_KEY = 'smm_maintenance';
+
+function getMaintState(){
+  try{ return JSON.parse(localStorage.getItem(MAINT_KEY)||'null'); }
+  catch(e){ return null; }
+}
+function saveMaintState(s){
+  try{ localStorage.setItem(MAINT_KEY, JSON.stringify(s)); }
+  catch(e){}
+}
+
+function checkMaintenanceOnLoad(){
+  var ms = getMaintState();
+  if(!ms || !ms.active) return;
+  // Admin bypass: full access
+  if(state.isAdmin || localStorage.getItem(ADMIN_SK)==='1'){
+    showMaintBannerForAdmin();
+    return;
+  }
+  // ALL non-admin users see maintenance screen — no store, no login, nothing
+  showMaintenanceOverlay(ms);
+  // Also intercept auth gate — hide it so only admin link is visible
+  document.getElementById('authGate').style.display='none';
+}
+
+function showMaintenanceOverlay(ms){
+  var overlay = document.getElementById('maintenanceOverlay');
+  if(!overlay) return;
+  var title = (ms && ms.title) || 'Sitio en mantenimiento';
+  var msg = (ms && ms.msg) || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
+  document.getElementById('maintTitleDisplay').textContent = title;
+  document.getElementById('maintMsgDisplay').textContent = msg;
+  overlay.style.display = 'flex';
+  // Hide auth gate if showing
+  document.getElementById('authGate').style.display = 'none';
+}
+
+function hideMaintenanceOverlay(){
+  var overlay = document.getElementById('maintenanceOverlay');
+  if(overlay) overlay.style.display = 'none';
+}
+
+function showMaintBannerForAdmin(){
+  // Show a small warning banner in store view
+  var banner = document.getElementById('storeMaintBanner');
+  if(banner) banner.style.display = 'flex';
+  // Also show in admin
+  updateMaintStatusBox();
+}
+
+function showAdminLogin(){
+  hideMaintenanceOverlay();
+  document.getElementById('authGate').style.display = 'none';
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.getElementById('view-admin-login').classList.add('active');
+}
+
+function toggleMaintenance(activate){
+  var title = document.getElementById('maint-title').value.trim() || 'Sitio en mantenimiento';
+  var msg = document.getElementById('maint-msg').value.trim() || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
+  var ms = {active:activate, title:title, msg:msg, since:new Date().toLocaleString('es')};
+  saveMaintState(ms);
+
+  var banner = document.getElementById('storeMaintBanner');
+  if(banner) banner.style.display = activate ? 'flex' : 'none';
+
+  // Lock/unlock buy buttons in store
+  updateStoreLockState();
+  updateMaintStatusBox();
+
+  if(activate){
+    showToast('&#x1F6A7; Modo mantenimiento ACTIVADO. Los visitantes ven el aviso.');
+  } else {
+    hideMaintenanceOverlay();
+    showToast('&#x2705; Mantenimiento desactivado. Sitio operativo.');
+  }
+}
+
+function updateMaintStatusBox(){
+  var box = document.getElementById('maintenanceStatus');
+  if(!box) return;
+  var ms = getMaintState();
+  if(ms && ms.active){
+    box.innerHTML = '<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;font-size:13px;color:#f87171"><strong>&#x1F6A7; MANTENIMIENTO ACTIVO</strong> desde '+ms.since+'</div>';
+    document.getElementById('maint-title').value = ms.title||'';
+    document.getElementById('maint-msg').value = ms.msg||'';
+  } else {
+    box.innerHTML = '<div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:10px 14px;font-size:13px;color:#34d399">&#x2705; Sitio operativo &mdash; sin mantenimiento activo</div>';
+  }
+}
+
+function updateStoreLockState(){
+  var ms = getMaintState();
+  var locked = ms && ms.active && !state.isAdmin;
+  // Lock all buy buttons
+  var btns = document.querySelectorAll('.buy-btn');
+  btns.forEach(function(b){
+    if(locked){
+      b.classList.add('maint-locked');
+      b.title='Compras deshabilitadas - Mantenimiento';
+      b.onclick=function(){showToast('Las compras estan temporalmente deshabilitadas.');};
+    } else {
+      b.classList.remove('maint-locked');
+      b.title='';
     }
   });
 }
@@ -2878,6 +2890,7 @@ function showToast(msg){var t=document.getElementById('toast');t.textContent=msg
 // ============================================================
 updateHeader();
 initEmailJS();
+checkMaintenanceOnLoad();
 if(state.isAdmin){
   document.getElementById('authGate').style.display='none';
   showView('admin');
