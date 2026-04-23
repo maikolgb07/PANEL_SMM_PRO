@@ -896,8 +896,6 @@ var state = {
   currentAff:null,
   isAdmin:false,
   emailjs:null,
-  apiConfig:null,
-  _providerServices:[],
   apiConfig:{url:'',key:'',enabled:false},
   providerServices:[],
   currentUser:null,
@@ -937,8 +935,7 @@ function loadState() {
       if(s.promo)     state.promo=s.promo;
       if(s.adminPass) ADMIN_PASS=s.adminPass;
       if(s.emailjs) state.emailjs=s.emailjs;
-      if(s.apiConfig) state.apiConfig=s.apiConfig;
-      if(s.apiConfig) state.apiConfig=s.apiConfig;
+
     }
     state.affiliates=JSON.parse(localStorage.getItem('smm_affs')||'[]');
     if(localStorage.getItem(ADMIN_SK)==='1') state.isAdmin=true;
@@ -951,8 +948,7 @@ function saveState() {
     localStorage.setItem('smm_state',JSON.stringify({
       config:state.config,platforms:state.platforms,products:state.products,
       orders:state.orders,promo:state.promo,adminPass:ADMIN_PASS,
-      emailjs:state.emailjs||null,apiConfig:state.apiConfig||null,
-      apiConfig:state.apiConfig||null
+      emailjs:state.emailjs||null
     }));
     localStorage.setItem('smm_affs',JSON.stringify(state.affiliates));
   } catch(e){}
@@ -1342,41 +1338,7 @@ function sendOrder(){
   state.orders.push(order); saveState();
   // Notify admin via WhatsApp
   // Pedido registrado sin WhatsApp - solo notificaciones internas y email
-    // Auto-submit to provider if API configured and product has providerId
-  if(state.apiConfig&&state.apiConfig.enabled&&state.apiConfig.url&&state.apiConfig.key){
-    var provId=curProd.providerId;
-    if(provId){
-      submitOrderToProvider(order.id, provId, user, qty);
-    }
-  }
-  // Push internal notification to admin
-  addNotification({
-    type:'new_order', orderId:ordId, read:false,
-    date:order.date, time:order.time,
-    title:'Nuevo pedido: '+curProd.name,
-    body:'Cliente: '+cu.name+' ('+cu.email+') | '+qty+' uds | '+order.creditCost+' Cr | Enlace: '+user,
-    userEmail:cu.email, userName:cu.name
-  });
-  // Push notification to user
-  addUserNotification(cu.id, {
-    type:'order_placed', orderId:ordId, read:false,
-    date:order.date, time:order.time,
-    title:'Pedido registrado: '+curProd.name,
-    body:'Tu pedido de '+qty+' '+catN[curProd.category]+' para '+pl.name+' fue registrado correctamente. ID: '+ordId+'. Te notificaremos cuando sea entregado.'
-  });
-  // Send email to admin
-  sendEmailToAdmin({
-    subject:'Nuevo pedido - '+ordId,
-    order_id:ordId,
-    service:curProd.name,
-    platform:pl.name,
-    qty:qty,
-    cost:order.creditCost+' Creditos',
-    client_name:cu.name,
-    client_email:cu.email,
-    profile_link:user,
-    date:order.date+' '+order.time
-  });
+    
   closeModal();
   updateHeader();
   updatePendingBadge();
@@ -1477,11 +1439,6 @@ function renderAdmin(){
   var ppEmoji=document.getElementById('profilePicPreviewEmoji');
   if(state.config.photo&&ppImg){ppImg.src=state.config.photo;ppImg.style.display='block';if(ppEmoji)ppEmoji.style.display='none';}
   else{if(ppImg)ppImg.style.display='none';if(ppEmoji){ppEmoji.style.display='block';ppEmoji.textContent=state.config.emoji||'&#x1F680;';}}
-  if(state.apiConfig){
-    document.getElementById('cfg-api-url').value=state.apiConfig.url||'';
-    document.getElementById('cfg-api-secret').value=state.apiConfig.secret||'';
-    updateApiStatusBar();
-  }
   if(state.emailjs){
     document.getElementById('cfg-ejs-pubkey').value=state.emailjs.publicKey||'';
     document.getElementById('cfg-ejs-service').value=state.emailjs.serviceId||'';
@@ -2385,14 +2342,24 @@ function showMaintenanceOverlay(ms){
   var msg = (ms && ms.msg) || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
   document.getElementById('maintTitleDisplay').textContent = title;
   document.getElementById('maintMsgDisplay').textContent = msg;
+  // Show overlay on top of everything
   overlay.style.display = 'flex';
-  // Hide auth gate if showing
+  overlay.style.zIndex = '9999';
+  // Hide auth gate and all views — only overlay visible
   document.getElementById('authGate').style.display = 'none';
+  var views = document.querySelectorAll('.view');
+  views.forEach(function(v){ v.style.visibility = 'hidden'; });
+  // Hide WA float
+  var wa = document.getElementById('waFloat'); if(wa) wa.style.display = 'none';
 }
 
 function hideMaintenanceOverlay(){
   var overlay = document.getElementById('maintenanceOverlay');
   if(overlay) overlay.style.display = 'none';
+  // Restore views and WA float
+  var views = document.querySelectorAll('.view');
+  views.forEach(function(v){ v.style.visibility = ''; });
+  var wa = document.getElementById('waFloat'); if(wa) wa.style.display = '';
 }
 
 function showMaintBannerForAdmin(){
