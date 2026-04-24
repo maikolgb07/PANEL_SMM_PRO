@@ -759,16 +759,21 @@ select.input-field{appearance:none}
 
       <!-- Provider selector -->
       <label class="lbl">Proveedor de IA</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px" id="aiProviderPicker">
-        <div id="provGemini" onclick="selectAiProvider('gemini')" style="background:linear-gradient(135deg,rgba(66,133,244,0.15),rgba(52,168,83,0.1));border:2px solid #4285f4;border-radius:12px;padding:12px;cursor:pointer;text-align:center">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px" id="aiProviderPicker">
+        <div id="provGroq" onclick="selectAiProvider('groq')" style="border:2px solid var(--accent3);border-radius:12px;padding:12px;cursor:pointer;text-align:center;background:rgba(16,185,129,0.1)">
+          <div style="font-size:20px;margin-bottom:4px">&#x26A1;</div>
+          <div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--accent3)">Groq</div>
+          <div style="font-size:9px;color:var(--accent3);margin-top:2px">&#x2B50; RECOMENDADO</div>
+        </div>
+        <div id="provGemini" onclick="selectAiProvider('gemini')" style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;text-align:center">
           <div style="font-size:20px;margin-bottom:4px">&#x1F3A8;</div>
-          <div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:#4285f4">Google Gemini</div>
-          <div style="font-size:10px;color:var(--accent3);margin-top:2px">&#x2705; GRATIS</div>
+          <div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--muted)">Gemini</div>
+          <div style="font-size:9px;color:var(--accent3);margin-top:2px">&#x2705; GRATIS</div>
         </div>
         <div id="provOpenRouter" onclick="selectAiProvider('openrouter')" style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;text-align:center">
           <div style="font-size:20px;margin-bottom:4px">&#x1F310;</div>
-          <div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:var(--muted)">OpenRouter</div>
-          <div style="font-size:10px;color:var(--accent3);margin-top:2px">&#x2705; GRATIS (modelos free)</div>
+          <div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--muted)">OpenRouter</div>
+          <div style="font-size:9px;color:var(--accent3);margin-top:2px">&#x2705; GRATIS</div>
         </div>
       </div>
 
@@ -2537,12 +2542,20 @@ var _aiThinking = false;
 var _aiProvider = 'gemini'; // default
 
 var AI_PROVIDERS = {
+  groq: {
+    name: 'Groq (Llama 3)',
+    model: 'llama-3.3-70b-versatile',
+    url: 'https://api.groq.com/openai/v1/chat/completions',
+    keyLink: 'https://console.groq.com/keys',
+    keyHint: '100% GRATIS. Ve a console.groq.com > Sign Up con Google > API Keys > Create key. La key empieza con gsk_',
+    keyPrefix: 'gsk_'
+  },
   gemini: {
     name: 'Google Gemini',
-    model: 'gemini-1.5-flash',
-    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+    model: 'gemini-1.5-pro',
+    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent',
     keyLink: 'https://aistudio.google.com/app/apikey',
-    keyHint: 'Gratis en aistudio.google.com > "Get API Key" > "Create API Key". Sin tarjeta de credito.',
+    keyHint: 'Gratis en aistudio.google.com > Get API Key > Create API Key. Sin tarjeta de credito.',
     keyPrefix: 'AIza'
   },
   openrouter: {
@@ -2550,7 +2563,7 @@ var AI_PROVIDERS = {
     model: 'meta-llama/llama-3.3-70b-instruct:free',
     url: 'https://openrouter.ai/api/v1/chat/completions',
     keyLink: 'https://openrouter.ai/keys',
-    keyHint: 'Gratis en openrouter.ai > Sign Up > Keys. Usa modelos marcados como ":free" sin costo.',
+    keyHint: 'Gratis en openrouter.ai > Sign Up > Keys > Create Key.',
     keyPrefix: 'sk-or-'
   }
 };
@@ -2561,26 +2574,29 @@ function selectAiProvider(prov) {
   var cfg = AI_PROVIDERS[prov];
   document.getElementById('aiKeyHelp').textContent = cfg.keyHint;
   document.getElementById('aiGetKeyLink').href = cfg.keyLink;
-  document.getElementById('aiApiKey').placeholder = 'Pega tu ' + cfg.name + ' API Key aqui...';
+  document.getElementById('aiApiKey').placeholder = 'Pega tu API Key de ' + cfg.name + ' aqui...';
   // Update UI picker highlight
-  var gemEl = document.getElementById('provGemini');
-  var orEl = document.getElementById('provOpenRouter');
-  if(prov === 'gemini'){
-    gemEl.style.borderColor = '#4285f4';
-    gemEl.style.background = 'linear-gradient(135deg,rgba(66,133,244,0.15),rgba(52,168,83,0.1))';
-    orEl.style.borderColor = 'var(--border)';
-    orEl.style.background = 'var(--bg)';
-    document.getElementById('provOpenRouter').querySelector('div:nth-child(2)').style.color='var(--muted)';
-    document.getElementById('provGemini').querySelector('div:nth-child(2)').style.color='#4285f4';
-  } else {
-    orEl.style.borderColor = '#ff6b35';
-    orEl.style.background = 'linear-gradient(135deg,rgba(255,107,53,0.12),rgba(255,107,53,0.05))';
-    gemEl.style.borderColor = 'var(--border)';
-    gemEl.style.background = 'var(--bg)';
-    document.getElementById('provGemini').querySelector('div:nth-child(2)').style.color='var(--muted)';
-    document.getElementById('provOpenRouter').querySelector('div:nth-child(2)').style.color='#ff6b35';
+  var ids = ['provGroq','provGemini','provOpenRouter'];
+  var provKeys = ['groq','gemini','openrouter'];
+  var activeColors = {groq:'var(--accent3)',gemini:'#4285f4',openrouter:'#a855f7'};
+  var activeBgs = {groq:'rgba(16,185,129,0.1)',gemini:'rgba(66,133,244,0.1)',openrouter:'rgba(168,85,247,0.1)'};
+  for(var i=0;i<ids.length;i++){
+    var el=document.getElementById(ids[i]);
+    if(!el) continue;
+    if(provKeys[i]===prov){
+      el.style.borderColor=activeColors[prov];
+      el.style.background=activeBgs[prov];
+    } else {
+      el.style.borderColor='var(--border)';
+      el.style.background='var(--bg)';
+    }
   }
-  loadAiKey();
+  // Reset status
+  document.getElementById('aiConnectionStatus').innerHTML='';
+  // Load saved key for this provider
+  var savedKey=localStorage.getItem(AI_KEY_STORAGE+'_'+prov)||'';
+  if(savedKey) document.getElementById('aiApiKey').value=savedKey;
+  else document.getElementById('aiApiKey').value='';
 }
 
 function saveAiKey(){
@@ -2624,9 +2640,13 @@ function callAiApi(key, prompt, onSuccess, onError) {
     var parts = [{text: prompt}];
     body = JSON.stringify({contents:[{role:'user', parts:parts}], generationConfig:{maxOutputTokens:8000}});
   } else {
-    // OpenRouter
+    // Groq and OpenRouter both use OpenAI-compatible format
     url = prov.url;
-    headers = {'Content-Type':'application/json','Authorization':'Bearer '+key,'HTTP-Referer':'https://smm.local','X-Title':'SMMBoost Admin'};
+    headers = {'Content-Type':'application/json','Authorization':'Bearer '+key};
+    if(_aiProvider === 'openrouter'){
+      headers['HTTP-Referer'] = 'https://smm.local';
+      headers['X-Title'] = 'SMMBoost Admin';
+    }
     body = JSON.stringify({model:prov.model, max_tokens:8000, messages:[{role:'user',content:prompt}]});
   }
 
@@ -2637,10 +2657,33 @@ function callAiApi(key, prompt, onSuccess, onError) {
       if(_aiProvider === 'gemini'){
         if(data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts){
           text = data.candidates[0].content.parts[0].text || '';
-        } else if(data.error){ onError(data.error.message||'Error de Gemini'); return; }
+        } else if(data.error){
+          var errMsg = data.error.message || 'Error de Gemini';
+          // If model not found, try fallback model
+          if(errMsg.indexOf('not found') >= 0 || errMsg.indexOf('not supported') >= 0){
+            errMsg = 'Modelo no disponible. Intentando con gemini-1.5-flash-latest...';
+            onError(errMsg);
+            // Auto-retry with fallback model
+            var fallbackUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' + encodeURIComponent(key);
+            fetch(fallbackUrl, {method:'POST', headers:headers, body:body})
+              .then(function(r2){ return r2.json(); })
+              .then(function(d2){
+                if(d2.candidates && d2.candidates[0] && d2.candidates[0].content && d2.candidates[0].content.parts){
+                  onSuccess(d2.candidates[0].content.parts[0].text || '');
+                } else {
+                  onError((d2.error && d2.error.message) || 'Ambos modelos fallaron. Revisa tu cuota en aistudio.google.com');
+                }
+              })
+              .catch(function(e2){ onError('Error red: ' + e2.message); });
+            return;
+          }
+          onError(errMsg); return;
+        }
       } else {
-        if(data.choices && data.choices[0]){ text = data.choices[0].message.content || ''; }
-        else if(data.error){ onError(data.error.message||'Error de OpenRouter'); return; }
+        // Groq and OpenRouter both return OpenAI format
+        if(data.choices && data.choices[0]){ text = data.choices[0].message && data.choices[0].message.content || ''; }
+        else if(data.error){ onError(data.error.message||'Error: ' + JSON.stringify(data.error)); return; }
+        else { onError('Respuesta inesperada del servidor'); return; }
       }
       onSuccess(text);
     })
@@ -2843,8 +2886,9 @@ function sendAiMessage(){
 
 // ---- Init AI tab ----
 function initAiTab(){
-  var savedProv = localStorage.getItem(AI_PROV_STORAGE) || 'gemini';
+  var savedProv = localStorage.getItem(AI_PROV_STORAGE) || 'groq';
   selectAiProvider(savedProv);
+  loadAiKey();
   renderRollbackList();
 }
 
@@ -2881,4 +2925,4 @@ if(state.isAdmin){
 }
 </script>
 </body>
-  </html>
+</html>
