@@ -2539,8 +2539,8 @@ var _aiProvider = 'gemini'; // default
 var AI_PROVIDERS = {
   gemini: {
     name: 'Google Gemini',
-    model: 'gemini-2.0-flash',
-    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+    model: 'gemini-1.5-flash',
+    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
     keyLink: 'https://aistudio.google.com/app/apikey',
     keyHint: 'Gratis en aistudio.google.com > "Get API Key" > "Create API Key". Sin tarjeta de credito.',
     keyPrefix: 'AIza'
@@ -2871,8 +2871,9 @@ if(state.isAdmin){
   document.getElementById('authGate').style.display='none';
   updateHeader();
   renderStore();
-  checkPromo();
   updatePendingBadge();
+  // Show promo EVERY time a logged-in user opens the site
+  setTimeout(checkPromo, 1200);
 } else {
   var asn=document.getElementById('authSiteName');
   if(asn)asn.textContent=state.config.name||'SMMBoost Pro';
