@@ -298,16 +298,74 @@ select.input-field{appearance:none}
 </div>
 
 <!-- MAINTENANCE MODE OVERLAY -->
-<div id="maintenanceOverlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:650;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center">
-  <div style="max-width:440px">
-    <div style="font-size:64px;margin-bottom:20px">&#x1F6E0;&#xFE0F;</div>
-    <div style="font-family:Syne,sans-serif;font-size:26px;font-weight:800;margin-bottom:10px;background:linear-gradient(135deg,#fff 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="maintTitleDisplay">Sitio en mantenimiento</div>
-    <p style="color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:28px" id="maintMsgDisplay">Estamos mejorando nuestra plataforma. Volvemos pronto con novedades.</p>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">&#x23F3; Tiempo estimado de regreso</div>
-      <div style="font-family:Syne,sans-serif;font-size:20px;font-weight:800;color:var(--gold)" id="maintCountdown">Pronto</div>
+<style>
+@keyframes maintPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:0.85}}
+@keyframes maintFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes maintOrb1{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-20px)}}
+@keyframes maintOrb2{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,30px)}}
+@keyframes maintGlow{0%,100%{box-shadow:0 0 40px rgba(124,58,237,0.3)}50%{box-shadow:0 0 80px rgba(124,58,237,0.6),0 0 120px rgba(6,182,212,0.2)}}
+#maintenanceOverlay{
+  display:none;position:fixed;inset:0;
+  background:linear-gradient(135deg,#06060e 0%,#0d0d1a 50%,#06060e 100%);
+  z-index:9999;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;text-align:center;overflow:hidden;
+}
+#maintenanceOverlay .maint-orb{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none}
+#maintenanceOverlay .maint-orb-1{width:400px;height:400px;background:rgba(124,58,237,0.18);top:-100px;right:-80px;animation:maintOrb1 8s ease-in-out infinite}
+#maintenanceOverlay .maint-orb-2{width:350px;height:350px;background:rgba(6,182,212,0.1);bottom:-80px;left:-60px;animation:maintOrb2 10s ease-in-out infinite}
+#maintCard{
+  position:relative;z-index:1;max-width:460px;width:100%;
+  background:rgba(18,18,26,0.95);
+  border:1px solid rgba(124,58,237,0.35);
+  border-radius:28px;padding:40px 32px;
+  animation:maintFadeIn 0.6s ease, maintGlow 3s ease-in-out infinite;
+  backdrop-filter:blur(20px);
+}
+#maintIcon{font-size:56px;margin-bottom:18px;animation:maintPulse 2.5s ease-in-out infinite}
+#maintBadge{
+  display:inline-block;background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(6,182,212,0.2));
+  border:1px solid rgba(124,58,237,0.5);color:var(--accent2);
+  font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
+  padding:5px 16px;border-radius:100px;margin-bottom:18px;
+}
+#maintTitle{
+  font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:12px;line-height:1.2;
+  background:linear-gradient(135deg,#ffffff 0%,#c4b5fd 50%,var(--accent2) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+#maintMsg{color:#9999bb;font-size:15px;line-height:1.8;margin-bottom:28px}
+#maintProgressWrap{background:rgba(255,255,255,0.05);border-radius:100px;height:4px;margin-bottom:24px;overflow:hidden}
+#maintProgressBar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;animation:maintProgress 3s ease-in-out infinite alternate}
+@keyframes maintProgress{from{width:20%}to{width:90%}}
+#maintAdminBtn{
+  position:absolute;bottom:16px;right:20px;
+  background:none;border:none;color:rgba(136,136,170,0.5);
+  font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:color 0.2s;padding:4px 8px;border-radius:6px;
+}
+#maintAdminBtn:hover{color:var(--accent2);background:rgba(6,182,212,0.08)}
+#maintDots{display:flex;justify-content:center;gap:6px;margin-top:4px}
+.maint-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2)}
+.maint-dot:nth-child(1){animation:maintDot 1.4s ease-in-out 0s infinite}
+.maint-dot:nth-child(2){animation:maintDot 1.4s ease-in-out 0.2s infinite}
+.maint-dot:nth-child(3){animation:maintDot 1.4s ease-in-out 0.4s infinite}
+@keyframes maintDot{0%,100%{background:rgba(255,255,255,0.2);transform:scale(1)}50%{background:var(--accent2);transform:scale(1.4)}}
+</style>
+<div id="maintenanceOverlay">
+  <div class="maint-orb maint-orb-1"></div>
+  <div class="maint-orb maint-orb-2"></div>
+  <div id="maintCard">
+    <div id="maintIcon">&#x1F6E0;&#xFE0F;</div>
+    <div id="maintBadge">MODO MANTENIMIENTO</div>
+    <div id="maintTitleDisplay">Sitio en mantenimiento</div>
+    <p id="maintMsgDisplay">Estamos mejorando nuestra plataforma para ofrecerte una mejor experiencia. Volvemos pronto.</p>
+    <div id="maintProgressWrap"><div id="maintProgressBar"></div></div>
+    <div id="maintDots">
+      <div class="maint-dot"></div>
+      <div class="maint-dot"></div>
+      <div class="maint-dot"></div>
     </div>
-    <p style="font-size:12px;color:var(--muted)">Si eres administrador, <button onclick="showAdminLogin()" style="background:none;border:none;color:var(--accent2);cursor:pointer;font-size:12px;text-decoration:underline">ingresa aqui</button>.</p>
+    <button id="maintAdminBtn" onclick="showAdminLogin()">&#x1F510; Admin</button>
   </div>
 </div>
 
@@ -325,7 +383,7 @@ select.input-field{appearance:none}
     <img id="promoPopupImg" src="" alt="" style="display:none;width:100%;border-radius:12px;object-fit:cover;max-height:180px;margin-bottom:14px">
     <div class="promo-title" id="promoTitle"></div>
     <div class="promo-desc" id="promoDesc"></div>
-    <button class="promo-cta" onclick="closePromo()">&#x1F4AB; Ver ofertas ahora</button>
+    <button class="promo-cta" onclick="goToPromoOffers()">&#x1F525; Ver oferta especial</button>
   </div>
 </div>
 
@@ -338,7 +396,7 @@ select.input-field{appearance:none}
     <div id="orderInstructions" style="display:none;margin-bottom:14px"></div>
     <div id="marcaRevisionAlert" style="display:none;background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.35);border-radius:12px;padding:14px;margin-bottom:14px">
       <div style="font-family:Syne,sans-serif;font-weight:700;font-size:13px;color:#facc15;margin-bottom:8px">&#x26A0;&#xFE0F; OBLIGATORIO: Desactiva "Marca por Revision" antes de continuar</div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Si no desactivas esta opcion, los seguidores no llegaran y <strong style="color:#f87171">no se reembolsara tu credito</strong>.</p>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Si no desactivas esta opcion, el servicio no se realizara correctamente y <strong style="color:#f87171">no se reembolsara tu credito</strong>.</p>
       <div style="font-size:12px;color:var(--muted);line-height:1.9">
         <div style="display:grid;grid-template-columns:20px 1fr;gap:4px 8px;align-items:start">
           <span style="color:#facc15;font-weight:700">1.</span><span>Abre Instagram y entra a tu perfil.</span>
@@ -387,7 +445,7 @@ select.input-field{appearance:none}
       <p><strong>Modo mantenimiento activo</strong> &mdash; Las compras estan deshabilitadas temporalmente.</p>
     </div>
   </header>
-  <div class="balance-bar" id="balanceBar" style="display:none">
+  <div class="balance-bar" id="balanceBar" style="display:none" onclick="showView('my-account')" title="Ver mi cuenta y creditos" style="cursor:pointer">
     <div class="credit-chip"><span class="coin">&#x1FA99;</span><span id="balanceDisplay">0</span> Creditos</div>
     <div class="user-chip">Hola, <strong id="userBarName"></strong></div>
     <button class="logout-chip" onclick="logoutUser()">Salir</button>
@@ -402,6 +460,12 @@ select.input-field{appearance:none}
   <div class="about-section">
     <h2>&#x1F4AC; Sobre Nosotros</h2>
     <p>Somos tu aliado para crecer en redes sociales. Servicios SMM de alta calidad. Contactanos para recargar creditos o cualquier consulta.</p>
+    <div style="margin-bottom:16px">
+      <button onclick="shareWebsite()" style="background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:100px;color:#fff;padding:11px 24px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Compartir esta web
+      </button>
+    </div>
     <div class="about-contacts">
       <a class="about-link about-wa" id="aboutWA" href="#" target="_blank">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 4a8 8 0 0 0-6.9 12L4 20l4.1-1.1A8 8 0 1 0 12 4zm4.7 10.9c-.2.6-1.2 1.1-1.6 1.2-.4 0-.8.1-2.4-.5-2-1-3.3-3-3.4-3.2-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.6-.3h.5c.1 0 .3 0 .5.4l.6 1.6c.1.2.1.4 0 .5l-.3.5-.3.3c.1.2.6.9 1.2 1.5.7.7 1.4 1 1.6 1.1l.5-.6c.1-.2.3-.2.5-.1l1.5.7c.2.1.4.2.4.4s-.1.8-.3 1z"/></svg>
@@ -426,20 +490,24 @@ select.input-field{appearance:none}
   </nav>
   <div class="panel">
     <h3>&#x1FA99; Mi Saldo de Creditos</h3>
-    <div class="stat-grid">
-      <div class="stat-card"><div class="stat-value gold" id="myBalance">0</div><div class="stat-label">Creditos disponibles</div></div>
+    <!-- Big credit display -->
+    <div style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.05));border:2px solid rgba(245,158,11,0.35);border-radius:16px;padding:20px;text-align:center;margin-bottom:16px">
+      <div style="font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">Mi Saldo Actual</div>
+      <div style="font-family:Syne,sans-serif;font-size:48px;font-weight:800;color:var(--gold);line-height:1" id="myBalance">0</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Creditos disponibles</div>
+      <a class="wa-mini-btn" id="insufWABtn" href="#" target="_blank" style="display:inline-flex;justify-content:center;padding:10px 22px;border-radius:100px;font-size:13px;font-weight:700;text-decoration:none;background:var(--wa);color:#fff;gap:6px">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M12 4a8 8 0 0 0-6.9 12L4 20l4.1-1.1A8 8 0 1 0 12 4zm4.7 10.9c-.2.6-1.2 1.1-1.6 1.2-.4 0-.8.1-2.4-.5-2-1-3.3-3-3.4-3.2-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.6-.3h.5c.1 0 .3 0 .5.4l.6 1.6c.1.2.1.4 0 .5l-.3.5-.3.3c.1.2.6.9 1.2 1.5.7.7 1.4 1 1.6 1.1l.5-.6c.1-.2.3-.2.5-.1l1.5.7c.2.1.4.2.4.4s-.1.8-.3 1z"/></svg>
+        Solicitar recarga de creditos
+      </a>
+    </div>
+    <div id="insufAlertAccount" style="display:none;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#f87171">
+      &#x26A0;&#xFE0F; Saldo en cero. Solicita una recarga para seguir comprando.
+    </div>
+    <div class="stat-grid" style="margin-bottom:0">
       <div class="stat-card"><div class="stat-value" id="myOrdersCount">0</div><div class="stat-label">Pedidos realizados</div></div>
       <div class="stat-card"><div class="stat-value" id="myTotalSpent">0</div><div class="stat-label">Creditos gastados</div></div>
     </div>
-    <div id="insufAlertAccount" style="display:none">
-      <div class="insuf-alert">
-        <p>No tienes creditos. Contacta al administrador para recargar tu cuenta.</p>
-        <a class="wa-mini-btn" id="insufWABtn" href="#" target="_blank">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="white"><path d="M12 4a8 8 0 0 0-6.9 12L4 20l4.1-1.1A8 8 0 1 0 12 4zm4.7 10.9c-.2.6-1.2 1.1-1.6 1.2-.4 0-.8.1-2.4-.5-2-1-3.3-3-3.4-3.2-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.6-.3h.5c.1 0 .3 0 .5.4l.6 1.6c.1.2.1.4 0 .5l-.3.5-.3.3c.1.2.6.9 1.2 1.5.7.7 1.4 1 1.6 1.1l.5-.6c.1-.2.3-.2.5-.1l1.5.7c.2.1.4.2.4.4s-.1.8-.3 1z"/></svg>
-          Recargar creditos
-        </a>
-      </div>
-    </div>
+
     <div class="divider"></div>
     <label class="lbl">Historial de recargas</label>
     <div id="myRechargeHistory"><p style="color:var(--muted);font-size:13px">Sin recargas aun.</p></div>
@@ -579,21 +647,15 @@ select.input-field{appearance:none}
       </div>
       <div class="divider"></div>
       <h4 style="font-family:Syne,sans-serif;font-size:14px;margin-bottom:12px">&#x1F6A7; Modo Mantenimiento</h4>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Activa el mantenimiento para bloquear compras y mostrar un aviso a los visitantes. Tu acceso de admin no se ve afectado.</p>
-      <div id="maintenanceStatus" style="margin-bottom:12px"></div>
-      <div class="form-row" style="margin-bottom:12px">
-        <div>
-          <label class="lbl">Titulo del aviso</label>
-          <input class="input-field" id="maint-title" placeholder="Ej: Sitio en mantenimiento" style="margin-bottom:0">
-        </div>
-        <div>
-          <label class="lbl">Subtitulo / mensaje</label>
-          <input class="input-field" id="maint-msg" placeholder="Ej: Volvemos pronto..." style="margin-bottom:0">
-        </div>
-      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Cuando este activo, <strong style="color:#f87171">solo el administrador</strong> puede ver la web. Los visitantes ven la pantalla de mantenimiento con tu mensaje personalizado.</p>
+      <div id="maintenanceStatus" style="margin-bottom:14px"></div>
+      <label class="lbl">Titulo del mensaje</label>
+      <input class="input-field" id="maint-title" placeholder="Ej: Sitio en mantenimiento">
+      <label class="lbl">Mensaje a los visitantes</label>
+      <input class="input-field" id="maint-msg" placeholder="Ej: Estamos mejorando la plataforma. Volvemos pronto.">
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn" id="maintActivateBtn" onclick="toggleMaintenance(true)" style="flex:1;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)">&#x1F6A7; Activar mantenimiento</button>
-        <button class="btn" id="maintDeactivateBtn" onclick="toggleMaintenance(false)" style="flex:1;background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3)">&#x2705; Desactivar mantenimiento</button>
+        <button class="btn" onclick="toggleMaintenance(true)" style="flex:1;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)">&#x1F6A7; Activar mantenimiento</button>
+        <button class="btn" onclick="toggleMaintenance(false)" style="flex:1;background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3)">&#x2705; Desactivar</button>
       </div>
       <div class="divider"></div>
       <h4 style="font-family:Syne,sans-serif;font-size:14px;margin-bottom:12px">&#x2709;&#xFE0F; Configuracion de Emails (EmailJS)</h4>
@@ -662,14 +724,12 @@ select.input-field{appearance:none}
       <h3>&#x1F4F1; Gestionar Plataformas</h3>
       <div id="platformsList"></div>
       <div class="divider"></div>
-      <label class="lbl">Agregar plataforma</label>
-      <div class="form-row">
-        <div><label class="lbl">Nombre</label><input class="input-field" id="np-plname" placeholder="Ej: Twitter"></div>
-        <div><label class="lbl">Clave SVG o emoji (si no hay foto)</label><input class="input-field" id="np-plicon" placeholder="twitter, telegram o emoji"></div>
-      </div>
-      <label class="lbl">Color de la tarjeta</label>
-      <input class="input-field" id="np-plcolor" placeholder="Color hex (ej: #1da1f2)">
-      <label class="lbl">Foto / icono personalizado (opcional)</label>
+      <label class="lbl">Agregar nueva plataforma</label>
+      <label class="lbl">Nombre</label>
+      <input class="input-field" id="np-plname" placeholder="Ej: Twitter, Threads...">
+      <input type="hidden" id="np-plicon" value="">
+      <input type="hidden" id="np-plcolor" value="#7c3aed">
+      <label class="lbl">Foto / icono de la plataforma (obligatorio)</label>
       <div class="img-upload-wrap">
         <div class="img-upload-box" onclick="document.getElementById('np-plimg-file').click()">
           <div class="img-preview" id="newPlatformImgPreview" style="background:var(--surface)">
@@ -677,8 +737,8 @@ select.input-field{appearance:none}
             <span>&#x1F4F1;</span>
           </div>
           <div class="img-upload-info">
-            <strong>Foto del icono (opcional)</strong>
-            <span>Si subes una foto, se usara como icono de la plataforma</span>
+            <strong>Sube la foto del icono &#x1F4F7;</strong>
+            <span>Esta foto sera el icono de la plataforma en el catalogo</span>
           </div>
           <button class="img-remove-btn" onclick="event.stopPropagation();removePlatformImg()">Quitar</button>
         </div>
@@ -691,7 +751,7 @@ select.input-field{appearance:none}
   <div class="admin-section" id="admin-products">
     <div class="panel">
       <h3>&#x1F4B0; Gestionar Productos</h3>
-      <p style="color:var(--muted);font-size:12px;margin-bottom:14px">El precio se define en Creditos. Ej: 100 seguidores = 1 credito, 500 seguidores = 3.5 creditos.</p>
+      
       <div id="productsList"></div>
       <div class="divider"></div>
       <label class="lbl">Agregar nuevo producto</label>
@@ -860,9 +920,12 @@ SVGS['snapchat']  = '<svg viewBox="0 0 24 24" width="44" height="44" xmlns="http
 
 function getIcon(key, size, customImg) {
   var s = size || 44;
-  if (customImg) return '<img src="'+customImg+'" style="width:'+s+'px;height:'+s+'px;border-radius:8px;object-fit:cover">';
-  if (SVGS[key]) return SVGS[key].replace('width="44"','width="'+s+'"').replace('height="44"','height="'+s+'"');
-  return '<span style="font-size:'+Math.round(s*0.75)+'px;line-height:1">'+key+'</span>';
+  if (customImg && customImg.length > 10) return '<img src="'+customImg+'" style="width:'+s+'px;height:'+s+'px;border-radius:8px;object-fit:cover;display:block">';
+  var k = (key||'').toLowerCase().trim();
+  if (SVGS[k]) return SVGS[k].replace('width="44"','width="'+s+'"').replace('height="44"','height="'+s+'"');
+  // Try emoji or short text fallback
+  if (key && key.length <= 4) return '<span style="font-size:'+Math.round(s*0.75)+'px;line-height:1">'+key+'</span>';
+  return '<span style="font-size:'+Math.round(s*0.75)+'px;line-height:1;color:var(--muted)">?</span>';
 }
 
 // ============================================================
@@ -1066,6 +1129,87 @@ function checkPromo(){
 }
 function closePromo(){ document.getElementById('promoOverlay').classList.remove('open'); }
 
+function goToPromoOffers(){
+  closePromo();
+  showView('store');
+  // Render a dedicated promo page with ONLY promo-special products
+  var promoProds = [];
+  for(var i=0;i<state.products.length;i++){
+    if(state.products[i].tag==='promo') promoProds.push(state.products[i]);
+  }
+  var userCr = getUserCredits();
+  var html = '';
+
+  // Header banner
+  html += '<div style="background:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(245,158,11,0.1));border:2px solid rgba(239,68,68,0.35);border-radius:20px;padding:24px 20px;margin-bottom:24px;text-align:center">';
+  html += '<div style="font-size:36px;margin-bottom:8px">&#x1F525;</div>';
+  html += '<div style="font-family:Syne,sans-serif;font-size:22px;font-weight:800;color:#f87171;margin-bottom:6px">Ofertas Especiales</div>';
+  html += '<div style="font-size:13px;color:var(--muted)">Promociones exclusivas &mdash; Tiempo limitado</div></div>';
+
+  if(promoProds.length === 0){
+    html += '<div style="text-align:center;padding:40px 20px">';
+    html += '<div style="font-size:48px;margin-bottom:16px">&#x1F4CB;</div>';
+    html += '<div style="font-family:Syne,sans-serif;font-size:16px;font-weight:700;margin-bottom:8px">No hay ofertas especiales activas</div>';
+    html += '<div style="font-size:13px;color:var(--muted);margin-bottom:20px">El administrador aun no ha marcado productos como Promo Especial.</div>';
+    html += '<button class="nav-btn active" onclick="goHome()">&#x1F3EA; Ver catalogo completo</button></div>';
+  } else {
+    html += '<div class="products-list">';
+    for(var k=0;k<promoProds.length;k++){
+      var pr = promoProds[k];
+      var pl = getPlatform(pr.platform);
+      var cc = parseFloat(pr.price) * state.affMult;
+      var dc = cc.toFixed(cc%1===0?0:1);
+      var canAfford = userCr >= cc;
+      var _ms = getMaintState();
+      var _isAdm = state.isAdmin || (localStorage.getItem(ADMIN_SK)==='1');
+      var maintLocked = _ms && _ms.active && !_isAdm;
+      var btnCls, btnLbl, btnClick;
+      if(maintLocked){
+        btnCls = 'buy-btn maint-locked'; btnLbl = 'En mantenimiento'; btnClick = 'return false';
+      } else if(!canAfford){
+        btnCls = 'buy-btn insufficient'; btnLbl = 'Saldo insuficiente'; btnClick = 'showInsufMsg()';
+      } else {
+        btnCls = 'buy-btn'; btnLbl = '&#x1F6D2; Pedir ahora'; btnClick = "openOrder('"+pr.id+"')";
+      }
+      html += '<div class="product-card" style="border-color:rgba(239,68,68,0.4);background:linear-gradient(135deg,var(--surface),rgba(239,68,68,0.04))">';
+      html += '<div class="product-info">';
+      html += '<div class="product-name">'+pr.name+' <span class="tag tag-promo">&#x1F525; Promo Especial</span></div>';
+      html += '<div class="product-desc">'+pr.desc+'</div>';
+      html += '<div class="product-qty" style="display:flex;align-items:center;gap:5px">'+getIcon(pl.icon,14,pl.customImg)+'&nbsp;'+pl.name+' &bull; '+pr.qty+' unidades</div>';
+      html += '</div>';
+      html += '<div class="product-right">';
+      html += '<div class="credit-price">&#x1FA99; '+dc+' <small>Cr</small></div>';
+      html += '<button class="'+btnCls+'" onclick="'+btnClick+'">'+btnLbl+'</button>';
+      html += '</div></div>';
+    }
+    html += '</div>';
+    html += '<div style="text-align:center;margin-top:4px;padding-bottom:10px">';
+    html += '<button class="nav-btn" onclick="goHome()">&#x1F3EA; Ver catalogo completo</button>';
+    html += '</div>';
+  }
+
+  document.getElementById('storeContent').innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+
+function shareWebsite(){
+  var url = window.location.href.split('?')[0];
+  var text = (state.config.name || 'SMMBoost Pro') + ' - Servicios SMM al mejor precio';
+  if(navigator.share){
+    navigator.share({title: state.config.name || 'SMMBoost Pro', text: text, url: url})
+      .catch(function(){});
+  } else {
+    // Fallback: copy to clipboard
+    navigator.clipboard.writeText(url).then(function(){
+      showToast('Enlace copiado! Comparte con tus amigos.');
+    }).catch(function(){
+      // Last resort: show the URL
+      prompt('Copia este enlace para compartir:', url);
+    });
+  }
+}
+
 // ============================================================
 // NAVIGATION
 // ============================================================
@@ -1098,8 +1242,18 @@ function updateHeader(){
   document.title=c.name;
   var img=document.getElementById('headerImg'),emo=document.getElementById('headerEmoji');
   var asn=document.getElementById('authSiteName');if(asn)asn.textContent=c.name;
-  if(c.photo){img.src=c.photo;img.style.display='block';if(emo)emo.style.display='none';}
-  else{img.style.display='none';if(emo){emo.style.display='block';emo.textContent=c.emoji||'';}}
+  if(c.photo && c.photo.length > 10){
+    img.src=c.photo;
+    img.style.display='block';
+    img.style.width='100%';
+    img.style.height='100%';
+    img.style.objectFit='cover';
+    if(emo)emo.style.display='none';
+  } else {
+    img.src='';
+    img.style.display='none';
+    if(emo){emo.style.display='block';emo.textContent=c.emoji||'';}
+  }
   var wa=(c.whatsapp||'').replace(/\D/g,'');
   var waEl=document.getElementById('waFloat');if(waEl)waEl.href='https://wa.me/'+wa+'?text=Hola!';
   var aWA=document.getElementById('aboutWA');if(aWA)aWA.href='https://wa.me/'+wa+'?text=Hola!';
@@ -1134,6 +1288,8 @@ function renderMyAccount(){
   document.getElementById('myTotalSpent').textContent=parseFloat(cu.totalSpent||0).toFixed(1);
   // Insufficient alert
   document.getElementById('insufAlertAccount').style.display=cred<=0?'block':'none';
+  // Update my account stats
+  var mbEl=document.getElementById('myBalance'); if(mbEl)mbEl.textContent=cred.toFixed(1);
   renderUserNotifs();
   // Recharge history
   var recharges=getRecharges(),myRec=[];
@@ -1155,7 +1311,7 @@ function renderMyAccount(){
       var o=myOrders[l];
       var sb=o.status==='pending'?'<span class="badge badge-yellow">Pendiente</span>':o.status==='confirmed'?'<span class="badge badge-green">Confirmado</span>':'<span class="badge badge-red">Cancelado</span>';
       oHtml+='<div class="order-card"><div class="order-header"><span class="order-id">'+o.id+' &middot; '+o.date+'</span>'+sb+'</div>';
-      oHtml+='<div class="order-body"><strong>'+o.productName+'</strong> &middot; '+o.platform+' &middot; '+o.qty+' uds<br>';
+      oHtml+='<div class="order-body"><strong>'+o.productName+'</strong> &middot; '+o.platform+' &middot; '+o.qty+' unidades<br>';
       oHtml+='Costo: <strong style="color:var(--gold)">'+o.creditCost+' Cr</strong> &middot; Perfil: <strong>'+o.user+'</strong></div></div>';
     }
     document.getElementById('myOrdersList').innerHTML=oHtml;
@@ -1185,7 +1341,7 @@ function renderStore(){
   var plt=state.nav.platform,cat=state.nav.category,html='';
   if(!plt){
     html='<div class="section-title">Elige una plataforma</div><div class="platforms-grid">';
-    for(var i=0;i<state.platforms.length;i++){var p=state.platforms[i];html+='<div class="platform-card" onclick="selectPlatform(\''+p.id+'\')"><div class="platform-icon">'+getIcon(p.icon,44)+'</div><div class="platform-name">'+p.name+'</div></div>';}
+    for(var i=0;i<state.platforms.length;i++){var p=state.platforms[i];html+='<div class="platform-card" onclick="selectPlatform(\''+p.id+'\')"><div class="platform-icon">'+getIcon(p.icon,44,p.customImg)+'</div><div class="platform-name">'+p.name+'</div></div>';}
     html+='</div>';
   } else if(!cat){
     var pl=getPlatform(plt),cats=getCats(plt);
@@ -1278,7 +1434,7 @@ function openOrder(pid){
   instrEl.style.display='block';
 
   // Marca por Revision: ONLY Instagram + followers
-  var isMarca=(pl.id==='instagram'&&curProd.category==='followers');
+  var isMarca=(pl.id==='instagram'); // Required for ALL Instagram services
   document.getElementById('marcaRevisionAlert').style.display=isMarca?'block':'none';
   var mc=document.getElementById('marcaCheck'); if(mc)mc.checked=false;
 
@@ -1296,7 +1452,7 @@ function openOrder(pid){
     var cc=(creditCost*mult), dcc=cc.toFixed(cc%1===0?0:1);
     var opt=document.createElement('option');
     opt.value=mult; opt.dataset.credits=cc; opt.dataset.qty=q;
-    opt.textContent=q+' unidades - '+dcc+' Creditos';
+    opt.textContent=q+' unids - '+dcc+' Creditos';
     sel.appendChild(opt);
   }
   updateOrderCheck(); sel.onchange=updateOrderCheck;
@@ -1329,7 +1485,14 @@ function updateOrderCheck(){
 function closeModal(){document.getElementById('orderModal').classList.remove('open');}
 
 function sendOrder(){
-  var _ms=getMaintState();if(_ms&&_ms.active&&!state.isAdmin){showToast('Las compras estan temporalmente deshabilitadas por mantenimiento.');return;}
+  // SECURITY: Hard block on orders during maintenance for non-admins
+  var _ms=getMaintState();
+  var _isAdm=state.isAdmin||(localStorage.getItem(ADMIN_SK)==='1');
+  if(_ms&&_ms.active&&!_isAdm){
+    closeModal();
+    showMaintenanceOverlay(_ms);
+    return;
+  }
   var user=document.getElementById('orderUser').value.trim();
   if(!user){showToast('Ingresa el enlace de tu perfil o publicacion');return;}
   var sel=document.getElementById('orderQty'); var opt=sel.options[sel.selectedIndex];
@@ -1408,7 +1571,7 @@ function renderAffiliate(){
     document.getElementById('affEarnings').textContent='$'+(fa.earnings||0).toFixed(2);
     var confOrds=[];for(var k=0;k<state.orders.length;k++)if(state.orders[k].affCode===fa.code&&state.orders[k].status==='confirmed')confOrds.push(state.orders[k]);
     if(confOrds.length===0){document.getElementById('affOrdersList').innerHTML='<p style="color:var(--muted);font-size:13px">Sin pedidos confirmados aun.</p>';}
-    else{var oH='';for(var l=0;l<confOrds.length;l++){var co=confOrds[l];oH+='<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:7px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><div><strong style="font-size:12px">'+co.productName+'</strong><div style="font-size:11px;color:var(--muted)">'+co.platform+' &middot; '+co.qty+' uds &middot; '+co.date+'</div></div><div style="text-align:right"><span class="badge badge-green">Confirmado</span><div style="font-size:12px;color:var(--accent3);font-weight:700;margin-top:3px">+$'+co.commission+'</div></div></div>';}document.getElementById('affOrdersList').innerHTML=oH;}
+    else{var oH='';for(var l=0;l<confOrds.length;l++){var co=confOrds[l];oH+='<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:7px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><div><strong style="font-size:12px">'+co.productName+'</strong><div style="font-size:11px;color:var(--muted)">'+co.platform+' &middot; '+co.qty+' unids &middot; '+co.date+'</div></div><div style="text-align:right"><span class="badge badge-green">Confirmado</span><div style="font-size:12px;color:var(--accent3);font-weight:700;margin-top:3px">+$'+co.commission+'</div></div></div>';}document.getElementById('affOrdersList').innerHTML=oH;}
   }
 }
 function affRegister(){
@@ -1449,7 +1612,16 @@ function renderAdmin(){
   var c=state.config;
   document.getElementById('cfg-name').value=c.name;document.getElementById('cfg-tagline').value=c.tagline;
   document.getElementById('cfg-whatsapp').value=c.whatsapp;document.getElementById('cfg-email').value=c.email;
-  // Photo is now handled via file upload preview (cfg-photo-file)document.getElementById('cfg-emoji').value=c.emoji;
+  // Photo preview - show saved photo if exists
+  var ppImg=document.getElementById('profilePicPreviewImg');
+  var ppEmo=document.getElementById('profilePicPreviewEmoji');
+  if(ppImg && c.photo && c.photo.length>10){
+    ppImg.src=c.photo; ppImg.style.display='block';
+    if(ppEmo) ppEmo.style.display='none';
+  } else if(ppImg){
+    ppImg.src=''; ppImg.style.display='none';
+    if(ppEmo){ ppEmo.style.display='block'; ppEmo.textContent=c.emoji||''; }
+  }document.getElementById('cfg-emoji').value=c.emoji;
   if(state.promo){
     document.getElementById('promo-title').value=state.promo.title||'';
     document.getElementById('promo-desc').value=state.promo.desc||'';
@@ -1483,7 +1655,23 @@ function saveConfig(){
   var np1=document.getElementById('cfg-np1').value.trim(),np2=document.getElementById('cfg-np2').value.trim();
   if(np1){if(np1!==np2){showToast('Las contrasenas no coinciden');return;}if(np1.length<6){showToast('Minimo 6 caracteres');return;}ADMIN_PASS=np1;document.getElementById('cfg-np1').value='';document.getElementById('cfg-np2').value='';}
   var uploadedPhoto=document.getElementById('profilePicPreviewImg').src||'';
-  var photoVal=uploadedPhoto.startsWith('data:')?uploadedPhoto:'';
+  var photoVal='';
+  if(uploadedPhoto && uploadedPhoto.startsWith('data:')){
+    // Compress image to max 400x400 before saving to avoid storage limits
+    try{
+      var canvas=document.createElement('canvas');
+      var tmpImg=new Image();
+      tmpImg.src=uploadedPhoto;
+      var maxDim=400;
+      var w=tmpImg.naturalWidth||200, h=tmpImg.naturalHeight||200;
+      var ratio=Math.min(maxDim/w, maxDim/h, 1);
+      canvas.width=Math.round(w*ratio);
+      canvas.height=Math.round(h*ratio);
+      var ctx=canvas.getContext('2d');
+      ctx.drawImage(tmpImg,0,0,canvas.width,canvas.height);
+      photoVal=canvas.toDataURL('image/jpeg',0.75);
+    }catch(e){ photoVal=uploadedPhoto; }
+  }
   state.config={name:document.getElementById('cfg-name').value||'SMMBoost Pro',tagline:document.getElementById('cfg-tagline').value||'Servicios SMM al mejor precio',whatsapp:document.getElementById('cfg-whatsapp').value||'+1234567890',email:document.getElementById('cfg-email').value||'',photo:photoVal,emoji:document.getElementById('cfg-emoji').value||''};
   // Save API config
   
@@ -1556,7 +1744,7 @@ function renderOrdersList(){
     html+='<div class="order-card"><div class="order-header"><span class="order-id">'+o.id+' &middot; '+o.date+'</span>'+sb+'</div>';
     var provInfo=o.providerOrderId?'<br>Proveedor ID: <strong style="color:var(--accent2)">#'+o.providerOrderId+'</strong> &middot; Estado: <strong>'+( o.providerStatus||'Enviado')+'</strong>':'';
     var provErr=o.providerError?'<br><span style="color:#f87171">Error proveedor: '+o.providerError+'</span>':'';
-    html+='<div class="order-body"><strong>'+o.productName+'</strong> &middot; '+o.platform+' &middot; '+o.qty+' uds<br>';
+    html+='<div class="order-body"><strong>'+o.productName+'</strong> &middot; '+o.platform+' &middot; '+o.qty+' unidades<br>';
     html+='Costo: <strong style="color:var(--gold)">'+o.creditCost+' Cr</strong> &middot; Enlace: <strong>'+(o.profileLink||o.user)+'</strong>'+provInfo+provErr+'<br>';
     html+='Cliente: <strong>'+o.userName+'</strong> ('+o.userEmail+')<br>';
     if(o.affCode)html+='Afiliado: <strong style="color:var(--accent2)">'+o.affCode+'</strong> &middot; Comision: <strong style="color:var(--accent3)">$'+o.commission+'</strong><br>';
@@ -1600,7 +1788,7 @@ function confirmOrder(oid){
         type:'completed', orderId:o.id, read:false,
         date:o.confirmedDate, time:o.confirmedTime,
         title:'Pedido entregado: '+o.productName,
-        body:'Cliente: '+o.userName+' ('+o.userEmail+') | '+o.qty+' uds entregados | Enlace: '+(o.profileLink||o.user),
+        body:'Cliente: '+o.userName+' ('+o.userEmail+') | '+o.qty+' unidades entregados | Enlace: '+(o.profileLink||o.user),
         userEmail:o.userEmail, userName:o.userName
       });
       // Add user notification
@@ -1697,23 +1885,28 @@ function renderUsersList(){
 }
 
 // PLATFORMS
-function renderPlatformsList(){var html='';for(var i=0;i<state.platforms.length;i++){var p=state.platforms[i],cnt=0;for(var j=0;j<state.products.length;j++)if(state.products[j].platform===p.id)cnt++;html+='<div class="prow"><span style="display:flex;align-items:center">'+getIcon(p.icon,26)+'</span><div class="prow-info"><strong>'+p.name+'</strong><div style="font-size:11px;color:var(--muted)">'+cnt+' productos</div></div><span class="color-dot" style="background:'+p.color+'"></span><button class="btn btn-danger btn-sm" onclick="removePlatform(\''+p.id+'\')">Eliminar</button></div>';}document.getElementById('platformsList').innerHTML=html||'<p style="color:var(--muted);font-size:13px">No hay plataformas</p>';}
+function renderPlatformsList(){var html='';for(var i=0;i<state.platforms.length;i++){var p=state.platforms[i],cnt=0;for(var j=0;j<state.products.length;j++)if(state.products[j].platform===p.id)cnt++;html+='<div class="prow"><span style="display:flex;align-items:center">'+getIcon(p.icon,26,p.customImg)+'</span><div class="prow-info"><strong>'+p.name+'</strong><div style="font-size:11px;color:var(--muted)">'+cnt+' productos</div></div><span class="color-dot" style="background:'+p.color+'"></span><button class="btn btn-danger btn-sm" onclick="removePlatform(\''+p.id+'\')">Eliminar</button></div>';}document.getElementById('platformsList').innerHTML=html||'<p style="color:var(--muted);font-size:13px">No hay plataformas</p>';}
 function addPlatform(){
   var name=document.getElementById('np-plname').value.trim();
-  var icon=document.getElementById('np-plicon').value.trim()||'p';
-  var color=document.getElementById('np-plcolor').value.trim()||'#7c3aed';
+  if(!name){showToast('Ingresa el nombre de la plataforma');return;}
+  var id=name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  for(var i=0;i<state.platforms.length;i++)if(state.platforms[i].id===id){showToast('Ya existe una plataforma con ese nombre');return;}
   var hasImg=(_newPlatformImgData&&_newPlatformImgData.startsWith('data:'));
-  if(!name){showToast('Ingresa el nombre');return;}
-  var id=name.toLowerCase().replace(/\s+/g,'_');
-  for(var i=0;i<state.platforms.length;i++)if(state.platforms[i].id===id){showToast('Ya existe');return;}
-  state.platforms.push({id:id,name:name,icon:icon,color:color,customImg:hasImg?_newPlatformImgData:''});
+  if(!hasImg){showToast('Sube una foto para el icono de la plataforma');return;}
+  // Auto-assign icon key from name (try known SVGs first)
+  var iconKey = name.toLowerCase().trim();
+  // Use a random accent color from palette
+  var colors=['#e1306c','#ff0000','#1877f2','#010101','#25d366','#2AABEE','#ff6600','#9146FF','#ff0050'];
+  var color = colors[Math.floor(Math.random()*colors.length)];
+  state.platforms.push({id:id, name:name, icon:iconKey, color:color, customImg:_newPlatformImgData});
   document.getElementById('np-plname').value='';
-  document.getElementById('np-plicon').value='';
-  document.getElementById('np-plcolor').value='';
+  _newPlatformImgData='';
   var pImg=document.getElementById('newPlatformImgPreviewImg');
   pImg.src='';pImg.style.display='none';
-  document.getElementById('newPlatformImgPreview').querySelector('span').style.display='block';
-  saveState();renderPlatformsList();showToast('Plataforma agregada!');
+  var sp=document.getElementById('newPlatformImgPreview').querySelector('span');
+  if(sp) sp.style.display='block';
+  saveState();renderPlatformsList();renderProductsList();
+  showToast('Plataforma agregada correctamente!');
 }
 function removePlatform(id){if(!confirm('Eliminar esta plataforma y sus productos?'))return;var np=[],npr=[];for(var i=0;i<state.platforms.length;i++)if(state.platforms[i].id!==id)np.push(state.platforms[i]);for(var j=0;j<state.products.length;j++)if(state.products[j].platform!==id)npr.push(state.products[j]);state.platforms=np;state.products=npr;saveState();renderPlatformsList();renderProductsList();showToast('Eliminada');}
 
@@ -1726,7 +1919,7 @@ function renderProductsList(){
   for(var j=0;j<state.products.length;j++){
     var pr=state.products[j],pl=getPlatform(pr.platform),th=buildTag(pr);
     var dpr=parseFloat(pr.price);var dprStr=dpr.toFixed(dpr%1===0?0:1);
-    html+='<div class="prow"><span style="display:flex;align-items:center">'+getIcon(pl.icon,20)+'</span><div class="prow-info"><strong style="font-size:12px">'+pr.name+'</strong>'+th+'<div style="font-size:11px;color:var(--muted)">'+pl.name+' &middot; '+(catL[pr.category]||pr.category)+' &middot; '+pr.qty+' uds</div></div><div class="prow-price">'+dprStr+' Cr</div><button class="btn btn-sm" style="background:var(--surface2);color:var(--text)" onclick="editProduct(\''+pr.id+'\')">Editar</button><button class="btn btn-danger btn-sm" onclick="removeProduct(\''+pr.id+'\')">X</button></div>';
+    html+='<div class="prow"><span style="display:flex;align-items:center">'+getIcon(pl.icon,20,pl.customImg)+'</span><div class="prow-info"><strong style="font-size:12px">'+pr.name+'</strong>'+th+'<div style="font-size:11px;color:var(--muted)">'+pl.name+' &middot; '+(catL[pr.category]||pr.category)+' &middot; '+pr.qty+' unidades</div></div><div class="prow-price">'+dprStr+' Cr</div><button class="btn btn-sm" style="background:var(--surface2);color:var(--text)" onclick="editProduct(\''+pr.id+'\')">Editar</button><button class="btn btn-danger btn-sm" onclick="removeProduct(\''+pr.id+'\')">X</button></div>';
   }
   document.getElementById('productsList').innerHTML=html;
 }
@@ -2220,7 +2413,7 @@ function renderProductProviderList(){
     var hasId=pr.providerId?true:false;
     html+='<div class="prow" style="flex-wrap:wrap;gap:8px">';
     html+='<div class="prow-info"><strong style="font-size:12px">'+pr.name+'</strong>';
-    html+='<div style="font-size:11px;color:var(--muted)">'+pl.name+' &middot; '+pr.qty+' uds &middot; '+pr.price+' Cr</div></div>';
+    html+='<div style="font-size:11px;color:var(--muted)">'+pl.name+' &middot; '+pr.qty+' unidades &middot; '+pr.price+' Cr</div></div>';
     html+='<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">';
     if(hasId){
       html+='<span style="background:rgba(16,185,129,0.12);color:var(--accent3);border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:3px 8px;font-size:11px">ID: '+pr.providerId+'</span>';
@@ -2347,42 +2540,57 @@ function saveMaintState(s){
 function checkMaintenanceOnLoad(){
   var ms = getMaintState();
   if(!ms || !ms.active) return;
-  // Admin bypass: full access
-  if(state.isAdmin || localStorage.getItem(ADMIN_SK)==='1'){
+  // Admin bypass check — check BOTH runtime flag AND persistent session
+  var adminSessionActive = (state.isAdmin === true) || (localStorage.getItem(ADMIN_SK) === '1');
+  if(adminSessionActive){
+    // Admin sees the site normally + a small warning banner
     showMaintBannerForAdmin();
+    updateMaintStatusBox();
     return;
   }
-  // ALL non-admin users see maintenance screen — no store, no login, nothing
+  // ALL public users (logged in or not) see only the maintenance screen
+  // No auth gate, no store, no nothing — just the overlay
   showMaintenanceOverlay(ms);
-  // Also intercept auth gate — hide it so only admin link is visible
-  document.getElementById('authGate').style.display='none';
 }
 
 function showMaintenanceOverlay(ms){
   var overlay = document.getElementById('maintenanceOverlay');
   if(!overlay) return;
-  var title = (ms && ms.title) || 'Sitio en mantenimiento';
-  var msg = (ms && ms.msg) || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
-  document.getElementById('maintTitleDisplay').textContent = title;
-  document.getElementById('maintMsgDisplay').textContent = msg;
-  // Show overlay on top of everything
-  overlay.style.display = 'flex';
-  overlay.style.zIndex = '9999';
-  // Hide auth gate and all views — only overlay visible
-  document.getElementById('authGate').style.display = 'none';
+  // Inject dynamic text from admin config
+  var title = (ms && ms.title) ? ms.title : (state.config && state.config.name ? state.config.name + ' — En mantenimiento' : 'Sitio en mantenimiento');
+  var msg   = (ms && ms.msg)   ? ms.msg   : 'Estamos mejorando nuestra plataforma para ofrecerte una mejor experiencia. Volvemos pronto.';
+  var td = document.getElementById('maintTitleDisplay');
+  var md = document.getElementById('maintMsgDisplay');
+  if(td) td.textContent = title;
+  if(md) md.textContent = msg;
+  // Full lockdown: z-index 9999, block everything
+  overlay.style.display  = 'flex';
+  overlay.style.zIndex   = '9999';
+  overlay.style.position = 'fixed';
+  overlay.style.inset    = '0';
+  // Hide auth gate, all views, WA float, promo overlay
+  var toHide = ['authGate','promoOverlay','orderModal'];
+  toHide.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.style.display='none'; el.style.visibility='hidden'; }
+  });
   var views = document.querySelectorAll('.view');
-  views.forEach(function(v){ v.style.visibility = 'hidden'; });
-  // Hide WA float
-  var wa = document.getElementById('waFloat'); if(wa) wa.style.display = 'none';
+  views.forEach(function(v){ v.style.visibility='hidden'; v.style.pointerEvents='none'; });
+  var wa = document.getElementById('waFloat');
+  if(wa){ wa.style.display='none'; }
+  // Block body scroll interaction
+  document.body.style.overflow = 'hidden';
 }
 
 function hideMaintenanceOverlay(){
   var overlay = document.getElementById('maintenanceOverlay');
-  if(overlay) overlay.style.display = 'none';
-  // Restore views and WA float
+  if(overlay){ overlay.style.display='none'; overlay.style.zIndex=''; }
+  // Restore full interactivity
   var views = document.querySelectorAll('.view');
-  views.forEach(function(v){ v.style.visibility = ''; });
-  var wa = document.getElementById('waFloat'); if(wa) wa.style.display = '';
+  views.forEach(function(v){ v.style.visibility=''; v.style.pointerEvents=''; });
+  var wa = document.getElementById('waFloat');
+  if(wa){ wa.style.display=''; }
+  document.body.style.overflow = '';
 }
 
 function showMaintBannerForAdmin(){
@@ -2394,30 +2602,38 @@ function showMaintBannerForAdmin(){
 }
 
 function showAdminLogin(){
-  hideMaintenanceOverlay();
-  document.getElementById('authGate').style.display = 'none';
-  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  // Hide overlay but keep views hidden until admin logs in
+  var overlay = document.getElementById('maintenanceOverlay');
+  if(overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
+  // Restore view visibility so admin-login page can be seen
+  var views = document.querySelectorAll('.view');
+  views.forEach(function(v){ v.style.visibility=''; v.style.pointerEvents=''; v.classList.remove('active'); });
+  var wa = document.getElementById('waFloat'); if(wa) wa.style.display = '';
   document.getElementById('view-admin-login').classList.add('active');
+  // If user tries to go back to store, check maintenance again
+  window._pendingMaintCheck = true;
 }
 
 function toggleMaintenance(activate){
   var title = document.getElementById('maint-title').value.trim() || 'Sitio en mantenimiento';
-  var msg = document.getElementById('maint-msg').value.trim() || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
-  var ms = {active:activate, title:title, msg:msg, since:new Date().toLocaleString('es')};
+  var msg   = document.getElementById('maint-msg').value.trim()   || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
+  var ms    = {active:activate, title:title, msg:msg, since:new Date().toLocaleString('es')};
   saveMaintState(ms);
-
   var banner = document.getElementById('storeMaintBanner');
   if(banner) banner.style.display = activate ? 'flex' : 'none';
-
-  // Lock/unlock buy buttons in store
   updateStoreLockState();
   updateMaintStatusBox();
-
   if(activate){
-    showToast('&#x1F6A7; Modo mantenimiento ACTIVADO. Los visitantes ven el aviso.');
+    showToast('Mantenimiento ACTIVADO. Solo admins pueden entrar.');
+    // Force-show overlay for a preview (then hide since we are admin)
+    var td = document.getElementById('maintTitleDisplay');
+    var md = document.getElementById('maintMsgDisplay');
+    if(td) td.textContent = title;
+    if(md) md.textContent = msg;
   } else {
     hideMaintenanceOverlay();
-    showToast('&#x2705; Mantenimiento desactivado. Sitio operativo.');
+    showToast('Mantenimiento desactivado. Sitio operativo.');
   }
 }
 
@@ -2465,13 +2681,33 @@ function readFileAsDataURL(file, callback) {
 // Profile pic
 function handleProfilePicUpload(input) {
   var file = input.files[0]; if (!file) return;
-  readFileAsDataURL(file, function(dataUrl) {
-    var img = document.getElementById('profilePicPreviewImg');
-    var emo = document.getElementById('profilePicPreviewEmoji');
-    img.src = dataUrl; img.style.display = 'block';
-    if (emo) emo.style.display = 'none';
-    showToast('Foto cargada. Guarda los cambios para aplicar.');
-  });
+  if(file.size > 5*1024*1024){showToast('Imagen muy grande. Max 5MB');return;}
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var raw = e.target.result;
+    // Compress to max 400px before setting
+    var tmpImg = new Image();
+    tmpImg.onload = function(){
+      var canvas = document.createElement('canvas');
+      var maxDim = 400;
+      var ratio = Math.min(maxDim/tmpImg.width, maxDim/tmpImg.height, 1);
+      canvas.width  = Math.round(tmpImg.width  * ratio);
+      canvas.height = Math.round(tmpImg.height * ratio);
+      canvas.getContext('2d').drawImage(tmpImg, 0, 0, canvas.width, canvas.height);
+      var compressed = canvas.toDataURL('image/jpeg', 0.8);
+      var previewImg = document.getElementById('profilePicPreviewImg');
+      var emo = document.getElementById('profilePicPreviewEmoji');
+      previewImg.src = compressed;
+      previewImg.style.display = 'block';
+      previewImg.style.width = '100%';
+      previewImg.style.height = '100%';
+      previewImg.style.objectFit = 'cover';
+      if(emo) emo.style.display = 'none';
+      showToast('Foto cargada. Presiona Guardar cambios.');
+    };
+    tmpImg.src = raw;
+  };
+  reader.readAsDataURL(file);
 }
 function removeProfilePic() {
   var img = document.getElementById('profilePicPreviewImg');
@@ -2487,14 +2723,27 @@ function removeProfilePic() {
 var _newPlatformImgData = '';
 function handlePlatformImgUpload(input) {
   var file = input.files[0]; if (!file) return;
-  readFileAsDataURL(file, function(dataUrl) {
-    _newPlatformImgData = dataUrl;
-    var img = document.getElementById('newPlatformImgPreviewImg');
-    img.src = dataUrl; img.style.display = 'block';
-    var sp = document.getElementById('newPlatformImgPreview').querySelector('span');
-    if (sp) sp.style.display = 'none';
-    showToast('Imagen cargada');
-  });
+  if(file.size > 3*1024*1024){showToast('Imagen muy grande. Max 3MB');return;}
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var tmpImg = new Image();
+    tmpImg.onload = function(){
+      var canvas = document.createElement('canvas');
+      var maxDim = 200;
+      var ratio = Math.min(maxDim/tmpImg.width, maxDim/tmpImg.height, 1);
+      canvas.width  = Math.round(tmpImg.width  * ratio);
+      canvas.height = Math.round(tmpImg.height * ratio);
+      canvas.getContext('2d').drawImage(tmpImg, 0, 0, canvas.width, canvas.height);
+      _newPlatformImgData = canvas.toDataURL('image/jpeg', 0.85);
+      var img = document.getElementById('newPlatformImgPreviewImg');
+      img.src = _newPlatformImgData; img.style.display = 'block';
+      var sp = document.getElementById('newPlatformImgPreview').querySelector('span');
+      if(sp) sp.style.display = 'none';
+      showToast('Icono cargado');
+    };
+    tmpImg.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 function removePlatformImg() {
   _newPlatformImgData = '';
@@ -2544,7 +2793,7 @@ var _aiProvider = 'gemini'; // default
 var AI_PROVIDERS = {
   groq: {
     name: 'Groq (Llama 3)',
-    model: 'llama-3.3-70b-versatile',
+    model: 'llama-3.1-8b-instant',
     url: 'https://api.groq.com/openai/v1/chat/completions',
     keyLink: 'https://console.groq.com/keys',
     keyHint: '100% GRATIS. Ve a console.groq.com > Sign Up con Google > API Keys > Create key. La key empieza con gsk_',
@@ -2647,7 +2896,7 @@ function callAiApi(key, prompt, onSuccess, onError) {
       headers['HTTP-Referer'] = 'https://smm.local';
       headers['X-Title'] = 'SMMBoost Admin';
     }
-    body = JSON.stringify({model:prov.model, max_tokens:8000, messages:[{role:'user',content:prompt}]});
+    body = JSON.stringify({model:prov.model, max_tokens:4000, messages:[{role:'user',content:prompt}]});
   }
 
   fetch(url, {method:'POST', headers:headers, body:body})
@@ -2723,7 +2972,12 @@ function addAiMsg(role, text){
 function removeThinking(){ var el=document.getElementById('aiThinkingMsg'); if(el)el.remove(); }
 
 // ---- Source getter ----
-function getFullSource(){ return document.documentElement.outerHTML; }
+function getFullSource(){
+  var full = document.documentElement.outerHTML;
+  // Keep only first 25KB to stay within token limits
+  if(full.length > 25000) return full.slice(0, 25000) + '\n<!-- HTML truncado -->';
+  return full;
+}
 
 // ---- Rollback system ----
 function getRollbacks(){ try{return JSON.parse(localStorage.getItem(ROLLBACK_STORAGE)||'[]');}catch(e){return[];} }
@@ -2841,20 +3095,41 @@ function sendAiMessage(){
 
   var src = getFullSource().slice(0, 120000);
   var sysPrompt = [
-    'Eres un experto en HTML/CSS/JS que edita un archivo de web SMM.',
-    'REGLAS:',
-    '1. Devuelve el HTML COMPLETO modificado.',
-    '2. No elimines funcionalidad existente sin que se pida.',
-    '3. No uses backticks en JS, usa concatenacion de strings.',
-    '4. Inicia con "CAMBIOS: [descripcion breve]"',
-    '5. Pon el codigo entre: ===INICIO_HTML=== y ===FIN_HTML===',
-    '6. Si solo preguntas, NO incluyas los marcadores.',
+    'Eres un experto en desarrollo web (HTML/CSS/JS).',
+    'Tu tarea: aplicar cambios especificos en un archivo HTML de una tienda SMM.',
+    'REGLAS IMPORTANTES:',
+    '1. El usuario te describira que cambiar. Tu propones el codigo del cambio.',
+    '2. NO devuelvas el archivo completo. Solo devuelve el FRAGMENTO de codigo que cambia.',
+    '3. Indica claramente QUE texto/codigo reemplaza a CUAL texto/codigo existente.',
+    '4. No uses template literals (backticks). Usa concatenacion con +.',
+    '5. Responde en espanol.',
+    '6. Si el cambio es de texto/color/estilo, solo muestra esa parte especifica.',
+    '7. Si el cambio es mas complejo, muestra solo la funcion o seccion afectada.',
     '',
-    'CODIGO ACTUAL (' + Math.round(src.length/1024) + 'KB):',
-    src
+    'FORMATO DE RESPUESTA:',
+    'CAMBIOS: [descripcion breve de lo que haces]',
+    '',
+    'BUSCA ESTE TEXTO EN EL ARCHIVO:',
+    '```',
+    '[fragmento original]',
+    '```',
+    '',
+    'REEMPLAZALO CON:',
+    '```',
+    '[fragmento nuevo]',
+    '```',
+    '',
+    'NOTA: Si hay multiples cambios, usa este formato para cada uno.',
+    'Si el usuario pide algo que requiere el archivo completo, indicalo y explica como hacerlo manualmente.'
   ].join('\n');
 
-  var fullPrompt = sysPrompt + '\n\nINSTRUCCION: ' + text;
+  // Add last 2 exchanges as context
+  var ctx = '';
+  if(_aiHistory.length > 0){
+    var recent = _aiHistory.slice(-4);
+    for(var hi=0;hi<recent.length;hi++) ctx += (recent[hi].role==='user'?'Usuario':'Asistente')+': '+recent[hi].content+'\n';
+  }
+  var fullPrompt = sysPrompt + '\n\n' + (ctx?'CONVERSACION PREVIA:\n'+ctx+'\n':'') + 'NUEVA INSTRUCCION DEL ADMINISTRADOR: ' + text;
 
   callAiApi(key, fullPrompt,
     function(resp){
@@ -2888,7 +3163,9 @@ function sendAiMessage(){
 function initAiTab(){
   var savedProv = localStorage.getItem(AI_PROV_STORAGE) || 'groq';
   selectAiProvider(savedProv);
-  loadAiKey();
+  // Load key for current provider
+  var k = localStorage.getItem(AI_KEY_STORAGE+'_'+savedProv) || localStorage.getItem(AI_KEY_STORAGE) || '';
+  if(k){ document.getElementById('aiApiKey').value = k; }
   renderRollbackList();
 }
 
@@ -2925,4 +3202,4 @@ if(state.isAdmin){
 }
 </script>
 </body>
-  </html>
+</html>
