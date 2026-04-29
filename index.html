@@ -299,76 +299,126 @@ select.input-field{appearance:none}
 
 <!-- MAINTENANCE MODE OVERLAY -->
 <style>
-@keyframes maintPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:0.85}}
-@keyframes maintFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes maintOrb1{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-20px)}}
-@keyframes maintOrb2{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,30px)}}
-@keyframes maintGlow{0%,100%{box-shadow:0 0 40px rgba(124,58,237,0.3)}50%{box-shadow:0 0 80px rgba(124,58,237,0.6),0 0 120px rgba(6,182,212,0.2)}}
+@keyframes mFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes mSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes mFade{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+@keyframes mOrb1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
+@keyframes mOrb2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,40px)}}
+@keyframes mOrb3{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,25px)}}
+@keyframes mGlow{0%,100%{box-shadow:0 0 60px rgba(124,58,237,0.4),0 0 120px rgba(124,58,237,0.15)}50%{box-shadow:0 0 80px rgba(124,58,237,0.6),0 0 160px rgba(6,182,212,0.2)}}
+@keyframes mBar{0%{width:15%}50%{width:85%}100%{width:15%}}
+@keyframes mDot{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2);background:var(--accent2)}}
+
 #maintenanceOverlay{
-  display:none;position:fixed;inset:0;
-  background:linear-gradient(135deg,#06060e 0%,#0d0d1a 50%,#06060e 100%);
-  z-index:9999;flex-direction:column;align-items:center;justify-content:center;
-  padding:24px;text-align:center;overflow:hidden;
+  display:none;
+  position:fixed;inset:0;
+  background:linear-gradient(145deg,#04040b 0%,#08081a 40%,#04040b 100%);
+  z-index:9999;
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:20px;text-align:center;overflow:hidden;
 }
-#maintenanceOverlay .maint-orb{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none}
-#maintenanceOverlay .maint-orb-1{width:400px;height:400px;background:rgba(124,58,237,0.18);top:-100px;right:-80px;animation:maintOrb1 8s ease-in-out infinite}
-#maintenanceOverlay .maint-orb-2{width:350px;height:350px;background:rgba(6,182,212,0.1);bottom:-80px;left:-60px;animation:maintOrb2 10s ease-in-out infinite}
+.m-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;opacity:0.7}
+.m-orb-1{width:500px;height:500px;background:rgba(124,58,237,0.2);top:-150px;right:-150px;animation:mOrb1 9s ease-in-out infinite}
+.m-orb-2{width:420px;height:420px;background:rgba(6,182,212,0.12);bottom:-120px;left:-120px;animation:mOrb2 11s ease-in-out infinite}
+.m-orb-3{width:300px;height:300px;background:rgba(16,185,129,0.08);bottom:100px;right:50px;animation:mOrb3 7s ease-in-out infinite}
+
 #maintCard{
-  position:relative;z-index:1;max-width:460px;width:100%;
-  background:rgba(18,18,26,0.95);
-  border:1px solid rgba(124,58,237,0.35);
-  border-radius:28px;padding:40px 32px;
-  animation:maintFadeIn 0.6s ease, maintGlow 3s ease-in-out infinite;
-  backdrop-filter:blur(20px);
+  position:relative;z-index:2;
+  max-width:480px;width:100%;
+  background:rgba(12,12,22,0.92);
+  border:1px solid rgba(124,58,237,0.4);
+  border-radius:28px;
+  padding:36px 28px 48px;
+  animation:mFade 0.7s cubic-bezier(0.34,1.56,0.64,1), mGlow 4s ease-in-out infinite;
+  backdrop-filter:blur(24px);
 }
-#maintIcon{font-size:56px;margin-bottom:18px;animation:maintPulse 2.5s ease-in-out infinite}
+
+/* Maintenance photo */
+#maintPhotoWrap{
+  width:90px;height:90px;border-radius:50%;
+  border:3px solid rgba(124,58,237,0.5);
+  margin:0 auto 16px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(124,58,237,0.15);
+  animation:mFloat 3s ease-in-out infinite;
+}
+#maintPhotoWrap img{width:100%;height:100%;object-fit:cover;display:none}
+#maintPhotoWrap .m-icon{font-size:40px}
+
 #maintBadge{
-  display:inline-block;background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(6,182,212,0.2));
-  border:1px solid rgba(124,58,237,0.5);color:var(--accent2);
-  font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
-  padding:5px 16px;border-radius:100px;margin-bottom:18px;
+  display:inline-flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,rgba(239,68,68,0.25),rgba(245,158,11,0.15));
+  border:1px solid rgba(239,68,68,0.4);
+  color:#fca5a5;font-size:10px;font-weight:800;letter-spacing:3px;
+  text-transform:uppercase;padding:5px 16px;border-radius:100px;margin-bottom:18px;
 }
-#maintTitle{
-  font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:12px;line-height:1.2;
-  background:linear-gradient(135deg,#ffffff 0%,#c4b5fd 50%,var(--accent2) 100%);
+#maintBadge span{width:7px;height:7px;border-radius:50%;background:#f87171;animation:mDot 1.2s ease-in-out infinite}
+
+#maintTitleDisplay{
+  font-family:'Syne',sans-serif;font-size:26px;font-weight:800;
+  margin-bottom:12px;line-height:1.2;
+  background:linear-gradient(135deg,#fff 0%,#c4b5fd 50%,#67e8f9 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-#maintMsg{color:#9999bb;font-size:15px;line-height:1.8;margin-bottom:28px}
-#maintProgressWrap{background:rgba(255,255,255,0.05);border-radius:100px;height:4px;margin-bottom:24px;overflow:hidden}
-#maintProgressBar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;animation:maintProgress 3s ease-in-out infinite alternate}
-@keyframes maintProgress{from{width:20%}to{width:90%}}
-#maintAdminBtn{
-  position:absolute;bottom:16px;right:20px;
-  background:none;border:none;color:rgba(136,136,170,0.5);
-  font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;
-  transition:color 0.2s;padding:4px 8px;border-radius:6px;
+#maintMsgDisplay{
+  color:#8888aa;font-size:14px;line-height:1.8;margin-bottom:24px;
 }
-#maintAdminBtn:hover{color:var(--accent2);background:rgba(6,182,212,0.08)}
-#maintDots{display:flex;justify-content:center;gap:6px;margin-top:4px}
-.maint-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2)}
-.maint-dot:nth-child(1){animation:maintDot 1.4s ease-in-out 0s infinite}
-.maint-dot:nth-child(2){animation:maintDot 1.4s ease-in-out 0.2s infinite}
-.maint-dot:nth-child(3){animation:maintDot 1.4s ease-in-out 0.4s infinite}
-@keyframes maintDot{0%,100%{background:rgba(255,255,255,0.2);transform:scale(1)}50%{background:var(--accent2);transform:scale(1.4)}}
+#maintSubMsg{
+  color:#6666aa;font-size:12px;line-height:1.6;margin-bottom:22px;display:none;
+}
+
+/* Progress bar */
+#mProgressWrap{background:rgba(255,255,255,0.06);border-radius:100px;height:3px;margin-bottom:20px;overflow:hidden}
+#mProgressBar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;animation:mBar 3.5s ease-in-out infinite}
+
+/* Dots */
+#mDots{display:flex;justify-content:center;gap:8px;margin-bottom:0}
+.m-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.15)}
+.m-dot:nth-child(1){animation:mDot 1.4s ease-in-out 0s infinite}
+.m-dot:nth-child(2){animation:mDot 1.4s ease-in-out 0.25s infinite}
+.m-dot:nth-child(3){animation:mDot 1.4s ease-in-out 0.5s infinite}
+
+/* Hidden admin button - barely visible */
+#maintAdminBtn{
+  position:absolute;bottom:14px;right:18px;
+  background:none;border:none;
+  color:rgba(100,100,140,0.35);
+  font-size:11px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:all 0.3s;padding:4px 8px;
+  border-radius:6px;letter-spacing:0.5px;
+}
+#maintAdminBtn:hover{color:var(--accent2);background:rgba(6,182,212,0.1)}
+
+@media(max-width:480px){
+  #maintCard{padding:28px 20px 44px;border-radius:20px}
+  #maintTitleDisplay{font-size:20px}
+  #maintMsgDisplay{font-size:13px}
+}
 </style>
+
 <div id="maintenanceOverlay">
-  <div class="maint-orb maint-orb-1"></div>
-  <div class="maint-orb maint-orb-2"></div>
+  <div class="m-orb m-orb-1"></div>
+  <div class="m-orb m-orb-2"></div>
+  <div class="m-orb m-orb-3"></div>
   <div id="maintCard">
-    <div id="maintIcon">&#x1F6E0;&#xFE0F;</div>
-    <div id="maintBadge">MODO MANTENIMIENTO</div>
+    <div id="maintPhotoWrap">
+      <img id="maintPhoto" src="" alt="">
+      <span class="m-icon">&#x1F6E0;&#xFE0F;</span>
+    </div>
+    <div id="maintBadge"><span></span>EN MANTENIMIENTO</div>
     <div id="maintTitleDisplay">Sitio en mantenimiento</div>
     <p id="maintMsgDisplay">Estamos mejorando nuestra plataforma para ofrecerte una mejor experiencia. Volvemos pronto.</p>
-    <div id="maintProgressWrap"><div id="maintProgressBar"></div></div>
-    <div id="maintDots">
-      <div class="maint-dot"></div>
-      <div class="maint-dot"></div>
-      <div class="maint-dot"></div>
+    <p id="maintSubMsg"></p>
+    <div id="mProgressWrap"><div id="mProgressBar"></div></div>
+    <div id="mDots">
+      <div class="m-dot"></div>
+      <div class="m-dot"></div>
+      <div class="m-dot"></div>
     </div>
     <button id="maintAdminBtn" onclick="showAdminLogin()">&#x1F510; Admin</button>
   </div>
 </div>
-
 
 <!-- WA FLOAT -->
 <a class="wa-float" id="waFloat" href="#" target="_blank">
@@ -647,15 +697,47 @@ select.input-field{appearance:none}
       </div>
       <div class="divider"></div>
       <h4 style="font-family:Syne,sans-serif;font-size:14px;margin-bottom:12px">&#x1F6A7; Modo Mantenimiento</h4>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Cuando este activo, <strong style="color:#f87171">solo el administrador</strong> puede ver la web. Los visitantes ven la pantalla de mantenimiento con tu mensaje personalizado.</p>
-      <div id="maintenanceStatus" style="margin-bottom:14px"></div>
-      <label class="lbl">Titulo del mensaje</label>
-      <input class="input-field" id="maint-title" placeholder="Ej: Sitio en mantenimiento">
-      <label class="lbl">Mensaje a los visitantes</label>
-      <input class="input-field" id="maint-msg" placeholder="Ej: Estamos mejorando la plataforma. Volvemos pronto.">
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn" onclick="toggleMaintenance(true)" style="flex:1;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)">&#x1F6A7; Activar mantenimiento</button>
-        <button class="btn" onclick="toggleMaintenance(false)" style="flex:1;background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3)">&#x2705; Desactivar</button>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Cuando este activo, <strong style="color:#f87171">solo el administrador</strong> puede ingresar. Los visitantes ven tu mensaje personalizado con foto.</p>
+      <div id="maintenanceStatus" style="margin-bottom:16px"></div>
+
+      <!-- PREVIEW card -->
+      <div id="maintPreviewCard" style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.25);border-radius:16px;padding:16px;margin-bottom:18px;text-align:center;display:none">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Vista previa del mensaje</div>
+        <div id="prevPhoto" style="width:60px;height:60px;border-radius:50%;border:2px solid rgba(124,58,237,0.4);margin:0 auto 10px;overflow:hidden;background:rgba(124,58,237,0.1);display:flex;align-items:center;justify-content:center;font-size:28px">&#x1F6E0;&#xFE0F;</div>
+        <div id="prevTitle" style="font-family:Syne,sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px"></div>
+        <div id="prevMsg" style="font-size:12px;color:var(--muted);line-height:1.6"></div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label class="lbl">Titulo del aviso</label>
+          <input class="input-field" id="maint-title" placeholder="Ej: Sitio en mantenimiento" oninput="updateMaintPreview()">
+        </div>
+        <div>
+          <label class="lbl">Mensaje principal</label>
+          <input class="input-field" id="maint-msg" placeholder="Ej: Volvemos pronto..." oninput="updateMaintPreview()">
+        </div>
+      </div>
+      <label class="lbl">Mensaje secundario (opcional)</label>
+      <input class="input-field" id="maint-submsg" placeholder="Ej: Para consultas escribe al WhatsApp">
+      <label class="lbl">Foto de la pantalla de mantenimiento (opcional)</label>
+      <div class="img-upload-wrap">
+        <div class="img-upload-box" onclick="document.getElementById('maint-photo-file').click()">
+          <div class="img-preview" id="maintPhotoAdminPreview" style="background:var(--surface)">
+            <img id="maintPhotoAdminPreviewImg" src="" alt="" style="display:none">
+            <span style="font-size:22px">&#x1F5BC;&#xFE0F;</span>
+          </div>
+          <div class="img-upload-info">
+            <strong>Foto del mensaje de mantenimiento</strong>
+            <span>Aparecera como avatar en la pantalla &bull; Max 2MB</span>
+          </div>
+          <button class="img-remove-btn" onclick="event.stopPropagation();removeMaintPhoto()">Quitar</button>
+        </div>
+        <input type="file" class="img-upload-input" id="maint-photo-file" accept="image/*" onchange="handleMaintPhotoUpload(this)">
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+        <button class="btn" onclick="toggleMaintenance(true)" style="flex:1;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);font-size:13px">&#x1F6A7; Activar mantenimiento</button>
+        <button class="btn" onclick="toggleMaintenance(false)" style="flex:1;background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:13px">&#x2705; Desactivar</button>
       </div>
       <div class="divider"></div>
       <h4 style="font-family:Syne,sans-serif;font-size:14px;margin-bottom:12px">&#x2709;&#xFE0F; Configuracion de Emails (EmailJS)</h4>
@@ -2556,30 +2638,39 @@ function checkMaintenanceOnLoad(){
 function showMaintenanceOverlay(ms){
   var overlay = document.getElementById('maintenanceOverlay');
   if(!overlay) return;
-  // Inject dynamic text from admin config
-  var title = (ms && ms.title) ? ms.title : (state.config && state.config.name ? state.config.name + ' — En mantenimiento' : 'Sitio en mantenimiento');
-  var msg   = (ms && ms.msg)   ? ms.msg   : 'Estamos mejorando nuestra plataforma para ofrecerte una mejor experiencia. Volvemos pronto.';
-  var td = document.getElementById('maintTitleDisplay');
-  var md = document.getElementById('maintMsgDisplay');
-  if(td) td.textContent = title;
-  if(md) md.textContent = msg;
-  // Full lockdown: z-index 9999, block everything
-  overlay.style.display  = 'flex';
-  overlay.style.zIndex   = '9999';
-  overlay.style.position = 'fixed';
-  overlay.style.inset    = '0';
-  // Hide auth gate, all views, WA float, promo overlay
-  var toHide = ['authGate','promoOverlay','orderModal'];
-  toHide.forEach(function(id){
-    var el = document.getElementById(id);
-    if(el){ el.style.display='none'; el.style.visibility='hidden'; }
+  // Dynamic title
+  var title  = (ms&&ms.title)  ? ms.title  : (state.config&&state.config.name ? state.config.name+' — En mantenimiento' : 'Sitio en mantenimiento');
+  var msg    = (ms&&ms.msg)    ? ms.msg    : 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
+  var submsg = (ms&&ms.submsg) ? ms.submsg : '';
+  var photo  = (ms&&ms.photo)  ? ms.photo  : '';
+  // Inject text
+  var td=document.getElementById('maintTitleDisplay'); if(td) td.textContent=title;
+  var md=document.getElementById('maintMsgDisplay');   if(md) md.textContent=msg;
+  var sd=document.getElementById('maintSubMsg');
+  if(sd){ sd.textContent=submsg; sd.style.display=submsg?'block':'none'; }
+  // Inject photo
+  var imgEl  = document.getElementById('maintPhoto');
+  var iconEl = document.querySelector('#maintPhotoWrap .m-icon');
+  if(imgEl&&photo&&photo.length>10){
+    imgEl.src=photo; imgEl.style.display='block';
+    if(iconEl) iconEl.style.display='none';
+  } else {
+    if(imgEl) imgEl.style.display='none';
+    if(iconEl) iconEl.style.display='block';
+  }
+  // Full screen lockdown
+  overlay.style.display='flex';
+  overlay.style.zIndex='9999';
+  // Hide everything else
+  ['authGate','promoOverlay','orderModal'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.style.display='none';el.style.visibility='hidden';}
   });
-  var views = document.querySelectorAll('.view');
-  views.forEach(function(v){ v.style.visibility='hidden'; v.style.pointerEvents='none'; });
-  var wa = document.getElementById('waFloat');
-  if(wa){ wa.style.display='none'; }
-  // Block body scroll interaction
-  document.body.style.overflow = 'hidden';
+  document.querySelectorAll('.view').forEach(function(v){
+    v.style.visibility='hidden'; v.style.pointerEvents='none';
+  });
+  var wa=document.getElementById('waFloat'); if(wa) wa.style.display='none';
+  document.body.style.overflow='hidden';
 }
 
 function hideMaintenanceOverlay(){
@@ -2591,6 +2682,63 @@ function hideMaintenanceOverlay(){
   var wa = document.getElementById('waFloat');
   if(wa){ wa.style.display=''; }
   document.body.style.overflow = '';
+}
+
+// Maintenance photo upload handler
+function handleMaintPhotoUpload(input){
+  var file=input.files[0]; if(!file) return;
+  if(file.size>2*1024*1024){showToast('Max 2MB');return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var tmpImg=new Image();
+    tmpImg.onload=function(){
+      var canvas=document.createElement('canvas');
+      var max=300; var ratio=Math.min(max/tmpImg.width,max/tmpImg.height,1);
+      canvas.width=Math.round(tmpImg.width*ratio);
+      canvas.height=Math.round(tmpImg.height*ratio);
+      canvas.getContext('2d').drawImage(tmpImg,0,0,canvas.width,canvas.height);
+      var data=canvas.toDataURL('image/jpeg',0.8);
+      state._maintPhoto=data;
+      var pi=document.getElementById('maintPhotoAdminPreviewImg');
+      if(pi){pi.src=data;pi.style.display='block';}
+      var sp=document.querySelector('#maintPhotoAdminPreview span');
+      if(sp) sp.style.display='none';
+      updateMaintPreview();
+      showToast('Foto cargada');
+    };
+    tmpImg.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function removeMaintPhoto(){
+  state._maintPhoto='';
+  var pi=document.getElementById('maintPhotoAdminPreviewImg');
+  if(pi){pi.src='';pi.style.display='none';}
+  var sp=document.querySelector('#maintPhotoAdminPreview span');
+  if(sp) sp.style.display='block';
+  document.getElementById('maint-photo-file').value='';
+  updateMaintPreview();
+}
+function updateMaintPreview(){
+  var preview=document.getElementById('maintPreviewCard');
+  var tf=document.getElementById('maint-title');
+  var mf=document.getElementById('maint-msg');
+  if(!preview||!tf) return;
+  var t=(tf.value||'').trim();
+  var m=(mf&&mf.value||'').trim();
+  if(!t&&!m){preview.style.display='none';return;}
+  preview.style.display='block';
+  var pt=document.getElementById('prevTitle'); if(pt) pt.textContent=t||'(sin titulo)';
+  var pm=document.getElementById('prevMsg');   if(pm) pm.textContent=m||'(sin mensaje)';
+  var pp=document.getElementById('prevPhoto');
+  if(pp){
+    if(state._maintPhoto&&state._maintPhoto.length>10){
+      pp.innerHTML='<img src="'+state._maintPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    } else {
+      pp.innerHTML='&#x1F6E0;&#xFE0F;';
+      pp.style.fontSize='28px';
+    }
+  }
 }
 
 function showMaintBannerForAdmin(){
@@ -2616,9 +2764,14 @@ function showAdminLogin(){
 }
 
 function toggleMaintenance(activate){
-  var title = document.getElementById('maint-title').value.trim() || 'Sitio en mantenimiento';
-  var msg   = document.getElementById('maint-msg').value.trim()   || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
-  var ms    = {active:activate, title:title, msg:msg, since:new Date().toLocaleString('es')};
+  var title  = document.getElementById('maint-title').value.trim()  || 'Sitio en mantenimiento';
+  var msg    = document.getElementById('maint-msg').value.trim()    || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
+  var submsg = (document.getElementById('maint-submsg')||{}).value  || '';
+  submsg = submsg.trim();
+  // Get photo from preview
+  var photoEl = document.getElementById('maintPhotoAdminPreviewImg');
+  var photo = (photoEl && photoEl.src && photoEl.src.startsWith('data:')) ? photoEl.src : (state._maintPhoto||'');
+  var ms = {active:activate, title:title, msg:msg, submsg:submsg, photo:photo, since:new Date().toLocaleString('es')};
   saveMaintState(ms);
   var banner = document.getElementById('storeMaintBanner');
   if(banner) banner.style.display = activate ? 'flex' : 'none';
@@ -2626,11 +2779,6 @@ function toggleMaintenance(activate){
   updateMaintStatusBox();
   if(activate){
     showToast('Mantenimiento ACTIVADO. Solo admins pueden entrar.');
-    // Force-show overlay for a preview (then hide since we are admin)
-    var td = document.getElementById('maintTitleDisplay');
-    var md = document.getElementById('maintMsgDisplay');
-    if(td) td.textContent = title;
-    if(md) md.textContent = msg;
   } else {
     hideMaintenanceOverlay();
     showToast('Mantenimiento desactivado. Sitio operativo.');
@@ -2642,11 +2790,20 @@ function updateMaintStatusBox(){
   if(!box) return;
   var ms = getMaintState();
   if(ms && ms.active){
-    box.innerHTML = '<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;font-size:13px;color:#f87171"><strong>&#x1F6A7; MANTENIMIENTO ACTIVO</strong> desde '+ms.since+'</div>';
-    document.getElementById('maint-title').value = ms.title||'';
-    document.getElementById('maint-msg').value = ms.msg||'';
+    box.innerHTML = '<div style="display:flex;align-items:center;gap:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px 14px"><span style="font-size:20px">&#x1F6A7;</span><div><div style="font-size:13px;font-weight:700;color:#f87171">MANTENIMIENTO ACTIVO</div><div style="font-size:11px;color:var(--muted)">Desde: '+ms.since+'</div></div></div>';
+    // Populate form with saved values
+    var tf=document.getElementById('maint-title'); if(tf) tf.value=ms.title||'';
+    var mf=document.getElementById('maint-msg');   if(mf) mf.value=ms.msg||'';
+    var sf=document.getElementById('maint-submsg');if(sf) sf.value=ms.submsg||'';
+    // Restore photo preview
+    if(ms.photo && ms.photo.length>10){
+      var pi=document.getElementById('maintPhotoAdminPreviewImg');
+      if(pi){pi.src=ms.photo;pi.style.display='block';var sp=document.querySelector('#maintPhotoAdminPreview span');if(sp)sp.style.display='none';}
+      state._maintPhoto=ms.photo;
+    }
+    updateMaintPreview();
   } else {
-    box.innerHTML = '<div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:10px 14px;font-size:13px;color:#34d399">&#x2705; Sitio operativo &mdash; sin mantenimiento activo</div>';
+    box.innerHTML = '<div style="display:flex;align-items:center;gap:10px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:12px 14px"><span style="font-size:20px">&#x2705;</span><div style="font-size:13px;color:#34d399;font-weight:600">Sitio operativo &mdash; sin mantenimiento activo</div></div>';
   }
 }
 
