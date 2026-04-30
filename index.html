@@ -299,124 +299,192 @@ select.input-field{appearance:none}
 
 <!-- MAINTENANCE MODE OVERLAY -->
 <style>
-@keyframes mFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-@keyframes mSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@keyframes mFade{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
-@keyframes mOrb1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
-@keyframes mOrb2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,40px)}}
-@keyframes mOrb3{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,25px)}}
-@keyframes mGlow{0%,100%{box-shadow:0 0 60px rgba(124,58,237,0.4),0 0 120px rgba(124,58,237,0.15)}50%{box-shadow:0 0 80px rgba(124,58,237,0.6),0 0 160px rgba(6,182,212,0.2)}}
-@keyframes mBar{0%{width:15%}50%{width:85%}100%{width:15%}}
-@keyframes mDot{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2);background:var(--accent2)}}
-
+/* ===== MAINTENANCE WALL ===== */
 #maintenanceOverlay{
   display:none;
-  position:fixed;inset:0;
-  background:linear-gradient(145deg,#04040b 0%,#08081a 40%,#04040b 100%);
-  z-index:9999;
-  flex-direction:column;align-items:center;justify-content:center;
-  padding:20px;text-align:center;overflow:hidden;
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  z-index:99999;
+  background:linear-gradient(160deg,#030308 0%,#08081c 50%,#030308 100%);
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  text-align:center;
+  overflow:hidden;
 }
-.m-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;opacity:0.7}
-.m-orb-1{width:500px;height:500px;background:rgba(124,58,237,0.2);top:-150px;right:-150px;animation:mOrb1 9s ease-in-out infinite}
-.m-orb-2{width:420px;height:420px;background:rgba(6,182,212,0.12);bottom:-120px;left:-120px;animation:mOrb2 11s ease-in-out infinite}
-.m-orb-3{width:300px;height:300px;background:rgba(16,185,129,0.08);bottom:100px;right:50px;animation:mOrb3 7s ease-in-out infinite}
+#maintenanceOverlay.visible{ display:flex !important; }
 
-#maintCard{
-  position:relative;z-index:2;
-  max-width:480px;width:100%;
-  background:rgba(12,12,22,0.92);
-  border:1px solid rgba(124,58,237,0.4);
+/* Animated orbs */
+.mw-orb{
+  position:absolute;border-radius:50%;
+  filter:blur(100px);pointer-events:none;
+}
+.mw-orb-1{
+  width:600px;height:600px;
+  background:rgba(124,58,237,0.22);
+  top:-200px;right:-200px;
+  animation:mwOrb1 10s ease-in-out infinite;
+}
+.mw-orb-2{
+  width:500px;height:500px;
+  background:rgba(6,182,212,0.13);
+  bottom:-150px;left:-150px;
+  animation:mwOrb2 13s ease-in-out infinite;
+}
+.mw-orb-3{
+  width:350px;height:350px;
+  background:rgba(16,185,129,0.08);
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  animation:mwOrb3 8s ease-in-out infinite;
+}
+@keyframes mwOrb1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
+@keyframes mwOrb2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,40px)}}
+@keyframes mwOrb3{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.2)}}
+
+/* Card */
+#mwCard{
+  position:relative;
+  z-index:2;
+  max-width:480px;
+  width:100%;
+  background:rgba(10,10,20,0.92);
+  border:1px solid rgba(124,58,237,0.45);
   border-radius:28px;
-  padding:36px 28px 48px;
-  animation:mFade 0.7s cubic-bezier(0.34,1.56,0.64,1), mGlow 4s ease-in-out infinite;
-  backdrop-filter:blur(24px);
+  padding:44px 32px 50px;
+  backdrop-filter:blur(28px);
+  animation:mwCardIn 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  box-shadow:0 0 80px rgba(124,58,237,0.25), 0 0 160px rgba(124,58,237,0.08);
+}
+@keyframes mwCardIn{
+  from{opacity:0;transform:scale(0.85) translateY(20px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
 }
 
-/* Maintenance photo */
-#maintPhotoWrap{
-  width:90px;height:90px;border-radius:50%;
-  border:3px solid rgba(124,58,237,0.5);
-  margin:0 auto 16px;overflow:hidden;
+/* Photo avatar */
+#mwAvatarWrap{
+  width:100px;height:100px;
+  border-radius:50%;
+  border:3px solid rgba(124,58,237,0.6);
+  margin:0 auto 20px;
+  overflow:hidden;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(124,58,237,0.15);
-  animation:mFloat 3s ease-in-out infinite;
+  background:rgba(124,58,237,0.1);
+  animation:mwFloat 3.5s ease-in-out infinite;
+  box-shadow:0 0 30px rgba(124,58,237,0.3);
 }
-#maintPhotoWrap img{width:100%;height:100%;object-fit:cover;display:none}
-#maintPhotoWrap .m-icon{font-size:40px}
+@keyframes mwFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+#mwAvatarImg{width:100%;height:100%;object-fit:cover;display:none}
+#mwAvatarIcon{font-size:44px;line-height:1}
 
-#maintBadge{
-  display:inline-flex;align-items:center;gap:6px;
-  background:linear-gradient(135deg,rgba(239,68,68,0.25),rgba(245,158,11,0.15));
+/* Status badge */
+#mwBadge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,rgba(239,68,68,0.2),rgba(245,158,11,0.1));
   border:1px solid rgba(239,68,68,0.4);
-  color:#fca5a5;font-size:10px;font-weight:800;letter-spacing:3px;
-  text-transform:uppercase;padding:5px 16px;border-radius:100px;margin-bottom:18px;
+  border-radius:100px;
+  padding:6px 18px;
+  margin-bottom:20px;
+  font-size:10px;font-weight:800;letter-spacing:3px;
+  text-transform:uppercase;color:#fca5a5;
 }
-#maintBadge span{width:7px;height:7px;border-radius:50%;background:#f87171;animation:mDot 1.2s ease-in-out infinite}
+#mwBadge .mw-dot{
+  width:8px;height:8px;border-radius:50%;background:#f87171;
+  animation:mwDotPulse 1.2s ease-in-out infinite;
+}
+@keyframes mwDotPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:0.6}}
 
-#maintTitleDisplay{
-  font-family:'Syne',sans-serif;font-size:26px;font-weight:800;
+/* Texts */
+#mwTitle{
+  font-family:'Syne',sans-serif;
+  font-size:28px;font-weight:800;
   margin-bottom:12px;line-height:1.2;
-  background:linear-gradient(135deg,#fff 0%,#c4b5fd 50%,#67e8f9 100%);
+  background:linear-gradient(135deg,#ffffff 0%,#c4b5fd 40%,#67e8f9 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-#maintMsgDisplay{
-  color:#8888aa;font-size:14px;line-height:1.8;margin-bottom:24px;
+#mwMessage{
+  color:#9090bb;font-size:14px;line-height:1.8;margin-bottom:12px;
 }
-#maintSubMsg{
-  color:#6666aa;font-size:12px;line-height:1.6;margin-bottom:22px;display:none;
+#mwSubMessage{
+  color:#6060aa;font-size:12px;line-height:1.6;margin-bottom:24px;
+  display:none;
 }
 
 /* Progress bar */
-#mProgressWrap{background:rgba(255,255,255,0.06);border-radius:100px;height:3px;margin-bottom:20px;overflow:hidden}
-#mProgressBar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;animation:mBar 3.5s ease-in-out infinite}
+#mwProgressWrap{
+  background:rgba(255,255,255,0.06);
+  border-radius:100px;height:3px;
+  margin-bottom:22px;overflow:hidden;
+}
+#mwProgressBar{
+  height:100%;border-radius:100px;
+  background:linear-gradient(90deg,#7c3aed,#06b6d4,#7c3aed);
+  background-size:200% 100%;
+  animation:mwProgress 2.5s linear infinite;
+}
+@keyframes mwProgress{0%{background-position:100% 0}100%{background-position:-100% 0}}
 
 /* Dots */
-#mDots{display:flex;justify-content:center;gap:8px;margin-bottom:0}
-.m-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.15)}
-.m-dot:nth-child(1){animation:mDot 1.4s ease-in-out 0s infinite}
-.m-dot:nth-child(2){animation:mDot 1.4s ease-in-out 0.25s infinite}
-.m-dot:nth-child(3){animation:mDot 1.4s ease-in-out 0.5s infinite}
-
-/* Hidden admin button - barely visible */
-#maintAdminBtn{
-  position:absolute;bottom:14px;right:18px;
-  background:none;border:none;
-  color:rgba(100,100,140,0.35);
-  font-size:11px;cursor:pointer;
-  font-family:'DM Sans',sans-serif;
-  transition:all 0.3s;padding:4px 8px;
-  border-radius:6px;letter-spacing:0.5px;
+#mwDots{display:flex;justify-content:center;gap:8px}
+.mw-loader-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(255,255,255,0.15);
 }
-#maintAdminBtn:hover{color:var(--accent2);background:rgba(6,182,212,0.1)}
+.mw-loader-dot:nth-child(1){animation:mwLD 1.4s ease-in-out 0s infinite}
+.mw-loader-dot:nth-child(2){animation:mwLD 1.4s ease-in-out 0.2s infinite}
+.mw-loader-dot:nth-child(3){animation:mwLD 1.4s ease-in-out 0.4s infinite}
+@keyframes mwLD{0%,100%{background:rgba(255,255,255,0.15);transform:scale(1)}50%{background:#06b6d4;transform:scale(1.4)}}
+
+/* Staff access button - barely visible */
+#mwStaffBtn{
+  position:absolute;
+  bottom:14px;right:18px;
+  background:none;border:none;
+  color:rgba(80,80,120,0.3);
+  font-size:10px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:all 0.4s;
+  padding:4px 8px;border-radius:6px;
+  letter-spacing:0.5px;
+  user-select:none;
+}
+#mwStaffBtn:hover{
+  color:rgba(124,58,237,0.7);
+  background:rgba(124,58,237,0.08);
+}
 
 @media(max-width:480px){
-  #maintCard{padding:28px 20px 44px;border-radius:20px}
-  #maintTitleDisplay{font-size:20px}
-  #maintMsgDisplay{font-size:13px}
+  #mwCard{padding:32px 20px 46px;border-radius:22px}
+  #mwTitle{font-size:22px}
+  #mwMessage{font-size:13px}
+  #mwAvatarWrap{width:80px;height:80px}
+  #mwAvatarIcon{font-size:36px}
 }
 </style>
 
 <div id="maintenanceOverlay">
-  <div class="m-orb m-orb-1"></div>
-  <div class="m-orb m-orb-2"></div>
-  <div class="m-orb m-orb-3"></div>
-  <div id="maintCard">
-    <div id="maintPhotoWrap">
-      <img id="maintPhoto" src="" alt="">
-      <span class="m-icon">&#x1F6E0;&#xFE0F;</span>
+  <div class="mw-orb mw-orb-1"></div>
+  <div class="mw-orb mw-orb-2"></div>
+  <div class="mw-orb mw-orb-3"></div>
+  <div id="mwCard">
+    <div id="mwAvatarWrap">
+      <img id="mwAvatarImg" src="" alt="">
+      <span id="mwAvatarIcon">&#x1F6E0;&#xFE0F;</span>
     </div>
-    <div id="maintBadge"><span></span>EN MANTENIMIENTO</div>
-    <div id="maintTitleDisplay">Sitio en mantenimiento</div>
-    <p id="maintMsgDisplay">Estamos mejorando nuestra plataforma para ofrecerte una mejor experiencia. Volvemos pronto.</p>
-    <p id="maintSubMsg"></p>
-    <div id="mProgressWrap"><div id="mProgressBar"></div></div>
-    <div id="mDots">
-      <div class="m-dot"></div>
-      <div class="m-dot"></div>
-      <div class="m-dot"></div>
+    <div id="mwBadge"><span class="mw-dot"></span>EN MANTENIMIENTO</div>
+    <div id="mwTitle">Sitio en mantenimiento</div>
+    <p id="mwMessage">Estamos mejorando nuestra plataforma. Volvemos pronto.</p>
+    <p id="mwSubMessage"></p>
+    <div id="mwProgressWrap"><div id="mwProgressBar"></div></div>
+    <div id="mwDots">
+      <div class="mw-loader-dot"></div>
+      <div class="mw-loader-dot"></div>
+      <div class="mw-loader-dot"></div>
     </div>
-    <button id="maintAdminBtn" onclick="showAdminLogin()">&#x1F510; Admin</button>
+    <button id="mwStaffBtn" onclick="mwShowAdminLogin()">Acceso Staff</button>
   </div>
 </div>
 
@@ -1027,7 +1095,7 @@ var TAG_CLASSES = {promo:'tag-promo', hot:'tag-hot', rec:'tag-rec', 'new':'tag-n
 // STATE
 // ============================================================
 var state = {
-  config:{name:'SMMBoost Pro',tagline:'Servicios SMM al mejor precio',whatsapp:'+1234567890',email:'contacto@smmboost.com',photo:'',emoji:''},
+  config:{name:'SMMBoost Pro',tagline:'Servicios SMM al mejor precio',whatsapp:'+1234567890',email:'contacto@smmboost.com',photo:'',emoji:'',isMaintenance:false,maintMessage:'Estamos mejorando nuestra plataforma. Volvemos pronto.',maintImage:'',maintSubMsg:''},
   platforms:[
     {id:'instagram',name:'Instagram',icon:'instagram',color:'#e1306c'},
     {id:'youtube',name:'YouTube',icon:'youtube',color:'#ff0000'},
@@ -1296,10 +1364,9 @@ function shareWebsite(){
 // NAVIGATION
 // ============================================================
 function showView(v){
-  // Block navigation during maintenance for non-admins
-  var _ms=getMaintState();
-  if(_ms&&_ms.active&&!state.isAdmin&&v!=='admin-login'){
-    showMaintenanceOverlay(_ms);
+  // MAINTENANCE WALL: block all navigation for non-admins
+  if(isMaintMode() && v !== 'admin-login'){
+    showMaintenanceWall();
     return;
   }
   var views=document.querySelectorAll('.view');
@@ -1419,6 +1486,8 @@ function getUserCredits(){
 }
 
 function renderStore(){
+  // Guard: never render store content during maintenance for non-admins
+  if(isMaintMode()){ showMaintenanceWall(); return; }
   updateHeader();
   var plt=state.nav.platform,cat=state.nav.category,html='';
   if(!plt){
@@ -1567,12 +1636,10 @@ function updateOrderCheck(){
 function closeModal(){document.getElementById('orderModal').classList.remove('open');}
 
 function sendOrder(){
-  // SECURITY: Hard block on orders during maintenance for non-admins
-  var _ms=getMaintState();
-  var _isAdm=state.isAdmin||(localStorage.getItem(ADMIN_SK)==='1');
-  if(_ms&&_ms.active&&!_isAdm){
+  // SECURITY: Hard block on orders during maintenance
+  if(isMaintMode()){
     closeModal();
-    showMaintenanceOverlay(_ms);
+    showMaintenanceWall();
     return;
   }
   var user=document.getElementById('orderUser').value.trim();
@@ -1683,12 +1750,23 @@ function requestPayout(){var aff=state.currentAff;if((aff.earnings||0)<5){showTo
 function adminLogin(){
   var u=document.getElementById('adminUser').value,p=document.getElementById('adminPass').value;
   if(u===ADMIN_USER&&p===ADMIN_PASS){
-    state.isAdmin=true;localStorage.setItem(ADMIN_SK,'1');
-    hideMaintenanceOverlay();
+    state.isAdmin=true;
+    localStorage.setItem(ADMIN_SK,'1');
+    // Admin authenticated: tear down the wall completely
+    hideMaintenanceWall();
     showView('admin');
   } else showToast('Credenciales incorrectas');
 }
-function adminLogout(){state.isAdmin=false;localStorage.removeItem(ADMIN_SK);showView('store');}
+function adminLogout(){
+  state.isAdmin=false;
+  localStorage.removeItem(ADMIN_SK);
+  // If maintenance still active, raise the wall again
+  if(getMaintState() && getMaintState().active){
+    showMaintenanceWall();
+  } else {
+    showView('store');
+  }
+}
 
 function renderAdmin(){
   var c=state.config;
@@ -2610,81 +2688,193 @@ function checkProviderOrderStatus(orderId){
 // ============================================================
 var MAINT_KEY = 'smm_maintenance';
 
+// ================================================================
+// MAINTENANCE WALL — Core functions
+// ================================================================
+var MAINT_KEY = 'smm_maintenance';
+
 function getMaintState(){
-  try{ return JSON.parse(localStorage.getItem(MAINT_KEY)||'null'); }
-  catch(e){ return null; }
+  try{
+    // Priority: state.config.isMaintenance (runtime, set by admin)
+    if(state.config.isMaintenance) return {active:true, title:state.config.name+' — Mantenimiento', msg:state.config.maintMessage, submsg:state.config.maintSubMsg, image:state.config.maintImage};
+    // Fallback: localStorage (persists across page reloads)
+    var s=JSON.parse(localStorage.getItem(MAINT_KEY)||'null');
+    return s;
+  }catch(e){return null;}
 }
 function saveMaintState(s){
-  try{ localStorage.setItem(MAINT_KEY, JSON.stringify(s)); }
-  catch(e){}
+  try{
+    localStorage.setItem(MAINT_KEY, JSON.stringify(s));
+    // Also sync to state.config for runtime checks
+    state.config.isMaintenance = s ? s.active : false;
+    if(s && s.msg) state.config.maintMessage = s.msg;
+    if(s && s.submsg) state.config.maintSubMsg = s.submsg;
+    if(s && s.image) state.config.maintImage = s.image;
+  }catch(e){}
 }
 
-function checkMaintenanceOnLoad(){
+// ---- THE WALL: Show full-screen maintenance overlay ----
+function showMaintenanceWall(){
   var ms = getMaintState();
   if(!ms || !ms.active) return;
-  // Admin bypass check — check BOTH runtime flag AND persistent session
-  var adminSessionActive = (state.isAdmin === true) || (localStorage.getItem(ADMIN_SK) === '1');
-  if(adminSessionActive){
-    // Admin sees the site normally + a small warning banner
+
+  var overlay = document.getElementById('maintenanceOverlay');
+  if(!overlay) return;
+
+  // Inject dynamic content from state.config / ms
+  var title  = ms.title  || (state.config.name ? state.config.name + ' — En mantenimiento' : 'Sitio en mantenimiento');
+  var msg    = ms.msg    || state.config.maintMessage || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
+  var submsg = ms.submsg || state.config.maintSubMsg  || '';
+  var image  = ms.image  || state.config.maintImage   || '';
+
+  var titleEl  = document.getElementById('mwTitle');
+  var msgEl    = document.getElementById('mwMessage');
+  var subEl    = document.getElementById('mwSubMessage');
+  var imgEl    = document.getElementById('mwAvatarImg');
+  var iconEl   = document.getElementById('mwAvatarIcon');
+
+  if(titleEl)  titleEl.textContent  = title;
+  if(msgEl)    msgEl.textContent    = msg;
+  if(subEl){   subEl.textContent    = submsg; subEl.style.display = submsg ? 'block' : 'none'; }
+
+  // Photo or icon
+  if(image && image.length > 10){
+    if(imgEl){  imgEl.src = image; imgEl.style.display = 'block'; }
+    if(iconEl)  iconEl.style.display = 'none';
+  } else {
+    if(imgEl)   imgEl.style.display = 'none';
+    if(iconEl)  iconEl.style.display = 'block';
+  }
+
+  // Show the wall — FULL LOCKDOWN
+  overlay.classList.add('visible');
+  overlay.style.display = 'flex';
+  overlay.style.zIndex  = '99999';
+  document.body.style.overflow = 'hidden';
+
+  // Hide auth gate and every view — nothing loads behind the wall
+  var ag = document.getElementById('authGate');
+  if(ag){ ag.style.display = 'none'; ag.style.visibility = 'hidden'; }
+  document.querySelectorAll('.view').forEach(function(v){
+    v.classList.remove('active');
+    v.style.display = 'none';
+  });
+  // Hide WA float and promo
+  ['waFloat','promoOverlay','orderModal'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.style.display = 'none';
+  });
+}
+
+function hideMaintenanceWall(){
+  var overlay = document.getElementById('maintenanceOverlay');
+  if(overlay){
+    overlay.classList.remove('visible');
+    overlay.style.display = 'none';
+    overlay.style.zIndex  = '';
+  }
+  document.body.style.overflow = '';
+  // Restore views
+  document.querySelectorAll('.view').forEach(function(v){
+    v.style.display = '';
+  });
+  // Restore WA float
+  var wa = document.getElementById('waFloat');
+  if(wa) wa.style.display = '';
+}
+
+// ---- Staff button on overlay → show admin login ----
+function mwShowAdminLogin(){
+  // Remove the wall temporarily to show admin login
+  var overlay = document.getElementById('maintenanceOverlay');
+  if(overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
+  document.querySelectorAll('.view').forEach(function(v){
+    v.style.display = ''; v.classList.remove('active');
+  });
+  var adminView = document.getElementById('view-admin-login');
+  if(adminView){
+    adminView.style.display = 'block';
+    adminView.classList.add('active');
+  }
+}
+
+function isMaintMode(){
+  if(state.isAdmin || localStorage.getItem(ADMIN_SK) === '1') return false;
+  var ms = getMaintState();
+  return !!(ms && ms.active);
+}
+
+// ---- Check on page load ----
+function checkMaintenanceOnLoad(){
+  // Admin bypass: if admin session is active, skip wall
+  if(state.isAdmin || localStorage.getItem(ADMIN_SK) === '1'){
     showMaintBannerForAdmin();
     updateMaintStatusBox();
     return;
   }
-  // ALL public users (logged in or not) see only the maintenance screen
-  // No auth gate, no store, no nothing — just the overlay
-  showMaintenanceOverlay(ms);
-}
-
-function showMaintenanceOverlay(ms){
-  var overlay = document.getElementById('maintenanceOverlay');
-  if(!overlay) return;
-  // Dynamic title
-  var title  = (ms&&ms.title)  ? ms.title  : (state.config&&state.config.name ? state.config.name+' — En mantenimiento' : 'Sitio en mantenimiento');
-  var msg    = (ms&&ms.msg)    ? ms.msg    : 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
-  var submsg = (ms&&ms.submsg) ? ms.submsg : '';
-  var photo  = (ms&&ms.photo)  ? ms.photo  : '';
-  // Inject text
-  var td=document.getElementById('maintTitleDisplay'); if(td) td.textContent=title;
-  var md=document.getElementById('maintMsgDisplay');   if(md) md.textContent=msg;
-  var sd=document.getElementById('maintSubMsg');
-  if(sd){ sd.textContent=submsg; sd.style.display=submsg?'block':'none'; }
-  // Inject photo
-  var imgEl  = document.getElementById('maintPhoto');
-  var iconEl = document.querySelector('#maintPhotoWrap .m-icon');
-  if(imgEl&&photo&&photo.length>10){
-    imgEl.src=photo; imgEl.style.display='block';
-    if(iconEl) iconEl.style.display='none';
-  } else {
-    if(imgEl) imgEl.style.display='none';
-    if(iconEl) iconEl.style.display='block';
+  var ms = getMaintState();
+  if(ms && ms.active){
+    showMaintenanceWall();
   }
-  // Full screen lockdown
-  overlay.style.display='flex';
-  overlay.style.zIndex='9999';
-  // Hide everything else
-  ['authGate','promoOverlay','orderModal'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el){el.style.display='none';el.style.visibility='hidden';}
-  });
-  document.querySelectorAll('.view').forEach(function(v){
-    v.style.visibility='hidden'; v.style.pointerEvents='none';
-  });
-  var wa=document.getElementById('waFloat'); if(wa) wa.style.display='none';
-  document.body.style.overflow='hidden';
 }
 
-function hideMaintenanceOverlay(){
-  var overlay = document.getElementById('maintenanceOverlay');
-  if(overlay){ overlay.style.display='none'; overlay.style.zIndex=''; }
-  // Restore full interactivity
-  var views = document.querySelectorAll('.view');
-  views.forEach(function(v){ v.style.visibility=''; v.style.pointerEvents=''; });
-  var wa = document.getElementById('waFloat');
-  if(wa){ wa.style.display=''; }
-  document.body.style.overflow = '';
+// Admin-only banner (shows while admin navigates during maintenance)
+function showMaintBannerForAdmin(){
+  var banner = document.getElementById('storeMaintBanner');
+  if(banner) banner.style.display = 'flex';
+  updateMaintStatusBox();
 }
 
-// Maintenance photo upload handler
+// Toggle maintenance from admin panel
+function toggleMaintenance(activate){
+  var titleIn  = (document.getElementById('maint-title')  ||{}).value || '';
+  var msgIn    = (document.getElementById('maint-msg')    ||{}).value || '';
+  var submsgIn = (document.getElementById('maint-submsg') ||{}).value || '';
+  var photoEl  = document.getElementById('maintPhotoAdminPreviewImg');
+  var imageIn  = (photoEl && photoEl.src && photoEl.src.startsWith('data:')) ? photoEl.src : (state._maintPhoto||'');
+
+  var title  = titleIn.trim()  || (state.config.name ? state.config.name+' — En mantenimiento' : 'Sitio en mantenimiento');
+  var msg    = msgIn.trim()    || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
+  var submsg = submsgIn.trim() || '';
+
+  var ms = {active:activate, title:title, msg:msg, submsg:submsg, image:imageIn, since:new Date().toLocaleString('es')};
+  saveMaintState(activate ? ms : {active:false});
+  state.config.isMaintenance = activate;
+
+  var banner = document.getElementById('storeMaintBanner');
+  if(banner) banner.style.display = activate ? 'flex' : 'none';
+  updateMaintStatusBox();
+
+  if(activate){
+    showToast('MANTENIMIENTO ACTIVADO — Solo admins pueden entrar');
+  } else {
+    hideMaintenanceWall();
+    showToast('Mantenimiento desactivado — Sitio abierto');
+  }
+}
+
+function updateMaintStatusBox(){
+  var box = document.getElementById('maintenanceStatus');
+  if(!box) return;
+  var ms = getMaintState();
+  if(ms && ms.active){
+    box.innerHTML = '<div style="display:flex;align-items:center;gap:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px 14px;margin-bottom:4px"><span style="font-size:22px">&#x1F6A7;</span><div><div style="font-size:13px;font-weight:700;color:#f87171">MANTENIMIENTO ACTIVO</div><div style="font-size:11px;color:var(--muted)">Activado: '+ms.since+'</div></div></div>';
+    var tf=document.getElementById('maint-title');   if(tf) tf.value=ms.title||'';
+    var mf=document.getElementById('maint-msg');     if(mf) mf.value=ms.msg||'';
+    var sf=document.getElementById('maint-submsg');  if(sf) sf.value=ms.submsg||'';
+    if(ms.image && ms.image.length>10){
+      var pi=document.getElementById('maintPhotoAdminPreviewImg');
+      if(pi){pi.src=ms.image;pi.style.display='block';}
+      state._maintPhoto=ms.image;
+    }
+    updateMaintPreview();
+  } else {
+    box.innerHTML = '<div style="display:flex;align-items:center;gap:10px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:12px 14px"><span style="font-size:22px">&#x2705;</span><div style="font-size:13px;color:#34d399;font-weight:600">Sitio operativo &mdash; sin mantenimiento</div></div>';
+  }
+}
+
+// Maintenance photo upload
 function handleMaintPhotoUpload(input){
   var file=input.files[0]; if(!file) return;
   if(file.size>2*1024*1024){showToast('Max 2MB');return;}
@@ -2697,12 +2887,12 @@ function handleMaintPhotoUpload(input){
       canvas.width=Math.round(tmpImg.width*ratio);
       canvas.height=Math.round(tmpImg.height*ratio);
       canvas.getContext('2d').drawImage(tmpImg,0,0,canvas.width,canvas.height);
-      var data=canvas.toDataURL('image/jpeg',0.8);
+      var data=canvas.toDataURL('image/jpeg',0.82);
       state._maintPhoto=data;
       var pi=document.getElementById('maintPhotoAdminPreviewImg');
       if(pi){pi.src=data;pi.style.display='block';}
-      var sp=document.querySelector('#maintPhotoAdminPreview span');
-      if(sp) sp.style.display='none';
+      var sp=document.getElementById('maintPhotoAdminPreview');
+      if(sp){var spn=sp.querySelector('span');if(spn)spn.style.display='none';}
       updateMaintPreview();
       showToast('Foto cargada');
     };
@@ -2712,10 +2902,11 @@ function handleMaintPhotoUpload(input){
 }
 function removeMaintPhoto(){
   state._maintPhoto='';
+  state.config.maintImage='';
   var pi=document.getElementById('maintPhotoAdminPreviewImg');
   if(pi){pi.src='';pi.style.display='none';}
-  var sp=document.querySelector('#maintPhotoAdminPreview span');
-  if(sp) sp.style.display='block';
+  var sp=document.getElementById('maintPhotoAdminPreview');
+  if(sp){var spn=sp.querySelector('span');if(spn)spn.style.display='block';}
   document.getElementById('maint-photo-file').value='';
   updateMaintPreview();
 }
@@ -2736,93 +2927,14 @@ function updateMaintPreview(){
       pp.innerHTML='<img src="'+state._maintPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
     } else {
       pp.innerHTML='&#x1F6E0;&#xFE0F;';
-      pp.style.fontSize='28px';
     }
   }
 }
 
-function showMaintBannerForAdmin(){
-  // Show a small warning banner in store view
-  var banner = document.getElementById('storeMaintBanner');
-  if(banner) banner.style.display = 'flex';
-  // Also show in admin
-  updateMaintStatusBox();
-}
-
-function showAdminLogin(){
-  // Hide overlay but keep views hidden until admin logs in
-  var overlay = document.getElementById('maintenanceOverlay');
-  if(overlay) overlay.style.display = 'none';
-  document.body.style.overflow = '';
-  // Restore view visibility so admin-login page can be seen
-  var views = document.querySelectorAll('.view');
-  views.forEach(function(v){ v.style.visibility=''; v.style.pointerEvents=''; v.classList.remove('active'); });
-  var wa = document.getElementById('waFloat'); if(wa) wa.style.display = '';
-  document.getElementById('view-admin-login').classList.add('active');
-  // If user tries to go back to store, check maintenance again
-  window._pendingMaintCheck = true;
-}
-
-function toggleMaintenance(activate){
-  var title  = document.getElementById('maint-title').value.trim()  || 'Sitio en mantenimiento';
-  var msg    = document.getElementById('maint-msg').value.trim()    || 'Estamos mejorando nuestra plataforma. Volvemos pronto.';
-  var submsg = (document.getElementById('maint-submsg')||{}).value  || '';
-  submsg = submsg.trim();
-  // Get photo from preview
-  var photoEl = document.getElementById('maintPhotoAdminPreviewImg');
-  var photo = (photoEl && photoEl.src && photoEl.src.startsWith('data:')) ? photoEl.src : (state._maintPhoto||'');
-  var ms = {active:activate, title:title, msg:msg, submsg:submsg, photo:photo, since:new Date().toLocaleString('es')};
-  saveMaintState(ms);
-  var banner = document.getElementById('storeMaintBanner');
-  if(banner) banner.style.display = activate ? 'flex' : 'none';
-  updateStoreLockState();
-  updateMaintStatusBox();
-  if(activate){
-    showToast('Mantenimiento ACTIVADO. Solo admins pueden entrar.');
-  } else {
-    hideMaintenanceOverlay();
-    showToast('Mantenimiento desactivado. Sitio operativo.');
-  }
-}
-
-function updateMaintStatusBox(){
-  var box = document.getElementById('maintenanceStatus');
-  if(!box) return;
-  var ms = getMaintState();
-  if(ms && ms.active){
-    box.innerHTML = '<div style="display:flex;align-items:center;gap:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px 14px"><span style="font-size:20px">&#x1F6A7;</span><div><div style="font-size:13px;font-weight:700;color:#f87171">MANTENIMIENTO ACTIVO</div><div style="font-size:11px;color:var(--muted)">Desde: '+ms.since+'</div></div></div>';
-    // Populate form with saved values
-    var tf=document.getElementById('maint-title'); if(tf) tf.value=ms.title||'';
-    var mf=document.getElementById('maint-msg');   if(mf) mf.value=ms.msg||'';
-    var sf=document.getElementById('maint-submsg');if(sf) sf.value=ms.submsg||'';
-    // Restore photo preview
-    if(ms.photo && ms.photo.length>10){
-      var pi=document.getElementById('maintPhotoAdminPreviewImg');
-      if(pi){pi.src=ms.photo;pi.style.display='block';var sp=document.querySelector('#maintPhotoAdminPreview span');if(sp)sp.style.display='none';}
-      state._maintPhoto=ms.photo;
-    }
-    updateMaintPreview();
-  } else {
-    box.innerHTML = '<div style="display:flex;align-items:center;gap:10px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:12px 14px"><span style="font-size:20px">&#x2705;</span><div style="font-size:13px;color:#34d399;font-weight:600">Sitio operativo &mdash; sin mantenimiento activo</div></div>';
-  }
-}
-
-function updateStoreLockState(){
-  var ms = getMaintState();
-  var locked = ms && ms.active && !state.isAdmin;
-  // Lock all buy buttons
-  var btns = document.querySelectorAll('.buy-btn');
-  btns.forEach(function(b){
-    if(locked){
-      b.classList.add('maint-locked');
-      b.title='Compras deshabilitadas - Mantenimiento';
-      b.onclick=function(){showToast('Las compras estan temporalmente deshabilitadas.');};
-    } else {
-      b.classList.remove('maint-locked');
-      b.title='';
-    }
-  });
-}
+// Legacy aliases (keep compatibility)
+function showMaintenanceOverlay(ms){ showMaintenanceWall(); }
+function hideMaintenanceOverlay(){ hideMaintenanceWall(); }
+function showAdminLogin(){ mwShowAdminLogin(); }
 
 // ============================================================
 // IMAGE UPLOAD HANDLERS
@@ -3341,22 +3453,37 @@ function showToast(msg){
 // ============================================================
 updateHeader();
 initEmailJS();
-checkMaintenanceOnLoad();
-if(state.isAdmin){
-  document.getElementById('authGate').style.display='none';
-  showView('admin');
-} else if(state.currentUser){
-  document.getElementById('authGate').style.display='none';
-  updateHeader();
-  renderStore();
-  updatePendingBadge();
-  // Show promo EVERY time a logged-in user opens the site
-  setTimeout(checkPromo, 1200);
-} else {
-  var asn=document.getElementById('authSiteName');
-  if(asn)asn.textContent=state.config.name||'SMMBoost Pro';
-  document.getElementById('authGate').style.display='flex';
-}
+// ---- MAINTENANCE FIRST CHECK ----
+// Run before ANY other initialization
+(function(){
+  var adminActive = state.isAdmin || (localStorage.getItem(ADMIN_SK) === '1');
+  var ms = getMaintState();
+  if(ms && ms.active){
+    if(adminActive){
+      // Admin: proceed normally, just show banner
+      showMaintBannerForAdmin();
+    } else {
+      // EVERYONE ELSE: show the wall and stop execution
+      showMaintenanceWall();
+      return; // Do NOT proceed with auth gate or store
+    }
+  }
+  // Normal flow (no maintenance or admin bypasses)
+  if(adminActive){
+    document.getElementById('authGate').style.display='none';
+    showView('admin');
+  } else if(state.currentUser){
+    document.getElementById('authGate').style.display='none';
+    updateHeader();
+    renderStore();
+    updatePendingBadge();
+    setTimeout(checkPromo, 1200);
+  } else {
+    var asn=document.getElementById('authSiteName');
+    if(asn)asn.textContent=state.config.name||'SMMBoost Pro';
+    document.getElementById('authGate').style.display='flex';
+  }
+})();
 </script>
 </body>
-</html>
+  </html>
